@@ -4,7 +4,7 @@ export const SITE = {
   profile: "https://github.com/denis23x",
   desc: "Senior Software Engineer | Interactive & Backend Systems",
   title: "Denis Iakimenko",
-  // ogImage: "astropaper-og.jpg",
+  ogImage: null,
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
