@@ -1,5 +1,5 @@
 ---
-author: Sat Naing
+author: Denis Iakimenko
 pubDatetime: 2022-09-23T04:58:53Z
 modDatetime: 2026-01-10T13:04:53.851Z
 title: How to configure AstroPaper theme
@@ -14,7 +14,7 @@ description: How you can make AstroPaper theme absolutely yours.
 
 AstroPaper is a highly customizable Astro blog theme. With AstroPaper, you can customize everything according to your personal taste. This article will explain how you can make some customizations easily in the config file.
 
-## Table of contents
+## Table of Contents
 
 ## Configuring SITE
 

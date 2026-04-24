@@ -199,13 +199,13 @@ export default async post => {
                               ],
                             },
                           },
-                          {
-                            type: "span",
-                            props: {
-                              style: { overflow: "hidden", fontWeight: "bold" },
-                              children: SITE.title,
-                            },
-                          },
+                          // {
+                          //   type: "span",
+                          //   props: {
+                          //     style: { overflow: "hidden", fontWeight: "bold" },
+                          //     children: SITE.title,
+                          //   },
+                          // },
                         ],
                       },
                     },

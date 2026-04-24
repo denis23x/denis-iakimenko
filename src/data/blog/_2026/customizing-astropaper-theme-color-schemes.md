@@ -15,7 +15,7 @@ description:
 
 This post will explain how you can enable/disable light & dark mode for the website. Moreover, you'll learn how you can customize color schemes of the entire website.
 
-## Table of contents
+## Table of Contents
 
 ## Enable/disable light & dark mode
 

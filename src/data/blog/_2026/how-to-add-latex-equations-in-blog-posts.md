@@ -20,7 +20,7 @@ This document demonstrates how to use LaTeX equations in your Markdown files for
   </figcaption>
 </figure>
 
-## Table of contents
+## Table of Contents
 
 ## Instructions
 
@@ -45,7 +45,7 @@ In this section, you will find instructions on how to add support for LaTeX in y
        remarkPlugins: [
          remarkMath, // [!code ++]
          remarkToc,
-         [remarkCollapse, { test: "Table of contents" }],
+         [remarkCollapse, { test: "Table of Contents" }],
        ],
        rehypePlugins: [rehypeKatex], // [!code ++]
        shikiConfig: {

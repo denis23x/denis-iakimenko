@@ -25,7 +25,7 @@ Here are some rules/recommendations, tips & ticks for creating new posts in Astr
   </figcaption>
 </figure>
 
-## Table of contents
+## Table of Contents
 
 ## Creating a Blog Post
 
@@ -119,13 +119,13 @@ canonicalURL: https://example.org/my-article-was-already-posted-here
 ---
 ```
 
-## Adding table of contents
+## Adding Table of Contents
 
-By default, a post (article) does not include any table of contents (toc). To include toc, you have to specify it in a specific way.
+By default, a post (article) does not include any Table of Contents (toc). To include toc, you have to specify it in a specific way.
 
-Write `Table of contents` in h2 format (## in markdown) and place it where you want it to be appeared on the post.
+Write `Table of Contents` in h2 format (## in markdown) and place it where you want it to be appeared on the post.
 
-For instance, if you want to place your table of contents just under the intro paragraph (like I usually do), you can do that in the following way.
+For instance, if you want to place your Table of Contents just under the intro paragraph (like I usually do), you can do that in the following way.
 
 <!-- prettier-ignore-start -->
 ```md
@@ -136,7 +136,7 @@ For instance, if you want to place your table of contents just under the intro p
 Here are some recommendations, tips & ticks for creating new posts in AstroPaper blog theme.
 
 <!-- [!code ++] -->
-## Table of contents
+## Table of Contents
 
 <!-- the rest of the post -->
 ```
@@ -168,7 +168,7 @@ import {
 export default defineConfig({
   // ...
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
+    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of Contents" }]],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },
