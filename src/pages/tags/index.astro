@@ -16,7 +16,7 @@ let tags = getUniqueTags(posts);
 <Layout title={`Tags | ${SITE.title}`}>
   <Header />
   <Main pageTitle="Tags" pageDesc="All the tags used in blog.">
-    <ul class="flex flex-wrap gap-6">
+    <ul class="flex flex-wrap gap-x-3 gap-y-2">
       {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} />)}
     </ul>
   </Main>
