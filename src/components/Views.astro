@@ -1,0 +1,96 @@
+---
+import IconEyeIcon from "@/assets/icons/IconEye.svg";
+
+type Props = {
+  slug: string;
+};
+
+const { slug } = Astro.props;
+---
+
+<span class="inline-flex items-center gap-x-2 opacity-80">
+  <IconEyeIcon />
+  <span class="sr-only">Views</span>
+  <span id="views">…</span>
+</span>
+
+<script define:vars={{ slug }} is:inline data-astro-rerun>
+  (() => {
+    if (!slug) return;
+
+    const el = document.getElementById("views");
+
+    if (!(el instanceof HTMLElement)) return;
+
+    const endpoint =
+      "https://unhtenrcalfzvebisnkj.supabase.co/functions/v1/views";
+
+    const controller = new AbortController();
+
+    const render = value => {
+      el.textContent = new Intl.NumberFormat().format(Number(value));
+    };
+
+    const fallback = () => {
+      el.textContent = "Undefined";
+    };
+
+    const load = async () => {
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ slug }),
+          signal: controller.signal,
+          keepalive: true,
+          credentials: "omit",
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          fallback();
+          return;
+        }
+
+        const value = await res.json();
+
+        render(value);
+      } catch {
+        fallback();
+      }
+    };
+
+    const start = () => {
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(load, { timeout: 1500 });
+      } else {
+        setTimeout(load, 0);
+      }
+    };
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        entries => {
+          if (entries[0]?.isIntersecting) {
+            observer.disconnect();
+
+            start();
+          }
+        },
+        {
+          rootMargin: "200px",
+        }
+      );
+
+      observer.observe(el);
+    } else {
+      start();
+    }
+
+    window.addEventListener("pagehide", () => controller.abort(), {
+      once: true,
+    });
+  })();
+</script>
