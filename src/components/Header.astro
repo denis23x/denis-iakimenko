@@ -66,54 +66,45 @@ const isActive = (path: string) => {
       <ul
         id="menu-items"
         class:list={[
-          "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
+          "mt-4 grid w-44 grid-cols-4 place-content-center gap-2",
           "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
           "hidden",
           "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
         ]}
       >
-        <li class="col-span-2">
-          <a href="/blog" class:list={{ "active-nav": isActive("/blog") }}>
-            Articles
-          </a>
-        </li>
-        <li class="col-span-2">
+        <li class="col-span-4">
           <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
             About
           </a>
         </li>
-        <li class="col-span-2">
+        <li class="col-span-1 flex items-center justify-center">
           <LinkButton
             href="/tags"
             class:list={[
-              "focus-outline flex justify-center p-3 sm:p-1",
-              {
-                "active-nav [&>svg]:stroke-accent": isActive("/tags"),
-              },
+              "focus-outline flex p-3 sm:p-1",
+              { "[&>svg]:stroke-accent": isActive("/tags") },
             ]}
             title="Tags"
             aria-label="tags"
           >
-            <IconTags class="hidden sm:inline-block" />
-            <span class="sm:sr-only">Tags</span>
+            <IconTags />
+            <span class="sr-only">Tags</span>
           </LinkButton>
         </li>
         {
           SITE.showArchives && (
-            <li class="col-span-2">
+            <li class="col-span-1 flex items-center justify-center">
               <LinkButton
                 href="/archives"
                 class:list={[
-                  "focus-outline flex justify-center p-3 sm:p-1",
-                  {
-                    "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                  },
+                  "focus-outline flex p-3 sm:p-1",
+                  { "[&>svg]:stroke-accent": isActive("/archives") },
                 ]}
                 title="Archives"
                 aria-label="archives"
               >
-                <IconArchive class="hidden sm:inline-block" />
-                <span class="sm:sr-only">Archives</span>
+                <IconArchive />
+                <span class="sr-only">Archives</span>
               </LinkButton>
             </li>
           )
