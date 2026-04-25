@@ -1,5 +1,9 @@
 {
   "showLineNumber": false,
   "livePreview": false,
-  "defaultViewMode": "preview"
+  "defaultViewMode": "preview",
+  "useTab": false,
+  "tabSize": 2,
+  "showIndentGuide": false,
+  "readableLineLength": true
 }

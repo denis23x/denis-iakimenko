@@ -15,7 +15,7 @@
               "state": {
                 "file": "src/data/blog/_2026/x.md",
                 "mode": "source",
-                "source": true
+                "source": false
               },
               "icon": "lucide-file",
               "title": "x"
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "8304aaa7de939d1e",
@@ -185,10 +186,29 @@
   },
   "active": "3e72a15752016303",
   "lastOpenFiles": [
+    "dist/sitemap-index.xml",
+    "dist/sitemap-0.xml",
+    "dist/_astro/astropaper-og.jWlOTf-L_1htqSw.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_ZLjCpk.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_zQyhS.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_Z1Ifn0W.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_1bCsMo.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_ZKSBFQ.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_Z9rUVe.webp",
+    "dist/_astro/astropaper-og.jWlOTf-L_23OvWl.webp",
+    "dist/index.html",
+    "dist/tags/supabase/index.html",
+    "dist/tags/astro/index.html",
+    "dist/tags/supabase",
+    "dist/tags/index.html",
+    "dist/tags/astro",
+    "dist/tags",
+    "dist/search/index.html",
+    "dist/search",
+    "dist/og.png",
+    "dist/blog/z/index.png",
     "src/data/blog/_2026/adding-new-post.md",
     "src/data/blog/_2026/x.md",
-    "src/data/blog/_2026/customizing-astropaper-theme-color-schemes.md",
-    "src/data/blog/Untitled.base",
-    "Untitled.base"
+    "src/data/blog/_2026/customizing-astropaper-theme-color-schemes.md"
   ]
 }
