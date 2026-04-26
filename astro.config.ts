@@ -6,6 +6,7 @@ import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import remarkDirective from "remark-directive";
 import remarkCalloutDirectives from "@microflash/remark-callout-directives";
+import rehypeLinkPolicy from "./src/utils/rehype/rehypeLinkPolicy";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -41,6 +42,7 @@ export default defineConfig({
       remarkToc,
       [remarkCollapse, { test: "Table of contents" }],
     ],
+    rehypePlugins: [rehypeLinkPolicy],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "github-dark-default" },

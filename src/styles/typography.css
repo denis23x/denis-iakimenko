@@ -39,6 +39,14 @@
       @apply marker:text-accent;
     }
 
+    ol {
+      @apply pl-10;
+
+      li {
+        @apply ps-0;
+      }
+    }
+
     hr {
       @apply border-border;
     }

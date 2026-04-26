@@ -53,9 +53,11 @@ Also, the author didn't explain the data storage layer. Where does **Astro DB** 
 
 Probably the most creative approach and much simpler than previous options.
 
-However, it depends on two third-party services (`corsproxy.io` and `hits.seeyoufarm.com`). If one becomes unavailable, the counter stops working. That is a weak point for long-term use.
+However, it depends on two third-party services ([corsproxy.io](https://corsproxy.io/) and [hits.seeyoufarm.com](http://hits.seeyoufarm.com/)). If one becomes unavailable, the counter stops working. That is a weak point for long-term use.
 
-By the way, right now one of the services is unavailable. Now do you understand why this is a poor implementation?
+:::danger
+By the way, right now one of the services is unavailable.
+:::
 
 ### Search Results Summary
 
@@ -101,11 +103,11 @@ sequenceDiagram
 
 ## Implementation
 
-If you don't have an account with [Supabase](https://supabase.com/) yet, I'd recommend creating one, confirming your email, and creating your first project. Leave all the settings at default, we don't need that right now.
+If you don't have an account with [Supabase](https://supabase.com/) yet, I'd recommend creating one, confirming your email, and creating your first project. Leave all the settings at default, we don't need that right now. After creating the project, wait a few minutes for initialization.
 
 ### Create Database
 
-This part takes only a few minutes and gives you permanent storage for all page views. After creating the project, wait a few minutes for initialization.
+This part takes only a few minutes and gives you permanent storage for all page views.
 
 Open `SQL Editor` and paste the next script:
 
@@ -238,7 +240,7 @@ At the very bottom of the page in the **Function name** field, enter the name of
 :::info
 In the function settings, find the **Verify JWT with legacy secret** parameter and disable it. Click **Save changes**.
 
-This is necessary for publicly calling the function by all users of your site.
+This is necessary for publicly calling the function by all visitors of your site.
 :::
 
 At the very beginning of this page, you'll notice the address of our function, `https://hash.supabase.co/functions/v1/views`, where `hash` is a randomly generated set of characters.
@@ -348,10 +350,8 @@ const { slug } = Astro.props;
 Once you've created the view counter component, you can use it as follows: declare the component's import, add it to your layout, and pass the current page's id to it.
 
 ```jsx file=layout.astro
----
 import Views from "@/components/Views.astro";
----
-
+...
 <Views slug={post.id} />
 ```
 
