@@ -107,10 +107,7 @@ const nextPost =
         ]}>|</span
       >
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
-      <span
-        aria-hidden="true"
-        class="max-sm:hidden">|</span
-      >
+      <span aria-hidden="true" class="max-sm:hidden">|</span>
       <Views slug={post.id} />
     </div>
     <article
@@ -196,7 +193,9 @@ const nextPost =
    * allowing users to copy code easily. */
   function attachCopyButtons() {
     const copyButtonLabel = "Copy";
-    const codeBlocks = Array.from(document.querySelectorAll("pre"));
+    const codeBlocks = Array.from(
+      document.querySelectorAll("pre:not(.mermaid)")
+    );
 
     for (const codeBlock of codeBlocks) {
       const wrapper = document.createElement("div");
