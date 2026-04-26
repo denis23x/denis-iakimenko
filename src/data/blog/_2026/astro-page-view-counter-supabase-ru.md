@@ -6,7 +6,7 @@ modDatetime: 2026-04-25T00:00:00Z
 author: Denis Iakimenko
 slug: astro-page-view-counter-supabase-ru
 featured: false
-draft: false
+draft: true
 tags:
   - astro
   - supabase

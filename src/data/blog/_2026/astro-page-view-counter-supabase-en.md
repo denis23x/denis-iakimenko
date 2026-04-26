@@ -1,6 +1,6 @@
 ---
 title: Astro Page View Counter with Supabase Edge Functions
-description: Build a lightweight Astro page view counter for your Astro blog using Supabase Postgres, Edge Functions, and a minimal Astro component.
+description: Learn how to build a lightweight Astro page view counter using Supabase Postgres, Edge Functions, and a tiny Astro component. No third-party analytics required.
 pubDatetime: 2022-09-23T15:22:00Z
 modDatetime: 2026-04-26T00:00:00Z
 author: Denis Iakimenko
@@ -21,11 +21,21 @@ tags:
 
 ## Introduction
 
-After setting up **Astro 6**, I became interested in how to add an **Astro page view counter** to my pages? It quickly became clear that in most cases this is easier to build yourself. In this article, I will show a complete solution with maximum details that will work for any **Astro blog**.
+After setting up **Astro 6**, one question immediately came to mind:
+
+How do you add a proper **page view counter** to an Astro blog without installing a heavy analytics platform?
+
+At first, it looked like there should be many ready-made solutions. There were. But after reviewing them, most were either too complex, too dependent on third-party services, or simply not something I would trust long-term.
+
+So I built my own version.
+
+In this article, I’ll show a complete **Astro page view counter** powered by **Supabase**, with real database storage, Edge Functions, and a tiny frontend component.
 
 ## Existing Astro Views Counter Solutions
 
-Naturally, the first thing I did was search the web for ready-made solutions and found the following implementations (of course, this is not all, but these are the first ones on the list of results):
+Naturally, the first thing I did was search for existing solutions. If someone already solved this cleanly, why reinvent it?
+
+Here are the most relevant implementations I found — and why none of them fully worked for me.
 
 > [https://crockettford.dev/blog/astro-blog-views-counter](https://crockettford.dev/blog/astro-blog-views-counter)
 
@@ -63,13 +73,13 @@ So I decided to build my own version: simple, practical, and independent **Astro
 
 ## The Plan
 
-We will use:
+We’ll use:
 
-- **Supabase** as a **Postgres** database
-- **Edge Functions** as the backend layer
-- **Astro component** for rendering views
+- **Supabase Postgres** for storing page views
+- **Supabase Edge Functions** for secure backend logic
+- a lightweight **Astro component** for rendering views on the page
 
-All logic for updating and returning views will live in the backend.
+Small stack with clear responsibilities. All logic for updating and returning views will live in the backend.
 
 ```mermaid
 sequenceDiagram
@@ -95,7 +105,7 @@ If you don't have an account with [Supabase](https://supabase.com/) yet, I'd rec
 
 ### Create Database
 
-After creating the project, wait a few minutes for initialization.
+This part takes only a few minutes and gives you permanent storage for all page views. After creating the project, wait a few minutes for initialization.
 
 Open `SQL Editor` and paste the next script:
 
@@ -110,7 +120,7 @@ create table public.views (
 ) TABLESPACE pg_default;
 ```
 
-It will create ready for work table for our analytics views.
+It will create ready for work table for our analytics views. That’s it — just a table with numbers.
 
 ### Configure Access Policy
 
@@ -126,13 +136,20 @@ For table `views`, create policy:
 
 All other settings remain unchanged.
 
+:::warn
 Now the table is publicly readable. For a simple page view counter with no personal data, this is usually acceptable.
+:::
 
 ## Edge Function
 
-Now create a public function that increments the counter and returns the current value.
+Now comes the useful part. We need one public endpoint that:
 
-Open: `Edge Functions → Deploy a new function → Via Editor`
+1. receives a page slug
+2. creates the row if missing
+3. increments views atomically
+4. returns the latest count
+
+Open: `Edge Functions → Deploy a new function → Via Editor` and paste the next code:
 
 ```ts file=views
 // Setup type definitions for built-in Supabase Runtime APIs
@@ -208,7 +225,7 @@ Deno.serve(async (req: Request) => {
 });
 ```
 
-### Code Notes
+### Code Review
 
 - restrict `corsHeaders` to your domain
 - handles `OPTIONS` and `POST`
@@ -216,7 +233,36 @@ Deno.serve(async (req: Request) => {
 - uses atomic **UPSERT**
 - returns updated count immediately
 
+At the very bottom of the page in the **Function name** field, enter the name of our function `views` and click **Deploy Function**. You will then be redirected to the function settings page.
+
+:::info
+In the function settings, find the **Verify JWT with legacy secret** parameter and disable it. Click **Save changes**.
+
+This is necessary for publicly calling the function by all users of your site.
+:::
+
+At the very beginning of this page, you'll notice the address of our function, `https://hash.supabase.co/functions/v1/views`, where `hash` is a randomly generated set of characters.
+
+Follow that link and you should receive the following error:
+
+```json
+{ "error": "Method not allowed" }
+```
+
+Excellent, exactly what we need!
+
+This indicates that the function is actually working and rejecting incoming **GET** requests, because in the code we explicitly specified only **OPTIONS** and **POST** requests.
+
+This completes the server-side work.
+
+If you'd like, you can play around with this request using tools like [Postman](https://www.postman.com/) or [Apidog](https://apidog.com/).
+
+- Send a **POST** request to the function's address with a request body like `{"slug":"test"}`.
+- Go to `Database → Tables` and verify that the new record was successfully created.
+
 ## Astro Component
+
+Now we connect everything to the frontend. This component sends a request after page load and updates the counter without blocking rendering.
 
 Create: `Views.astro`
 
@@ -292,24 +338,33 @@ const { slug } = Astro.props;
 </script>
 ```
 
-### Notes
+### Code Review
 
 - replace icon with your own
 - replace endpoint with your function URL
 - uses `requestIdleCallback`
 - does not block initial page render
 
+Once you've created the view counter component, you can use it as follows: declare the component's import, add it to your layout, and pass the current page's id to it.
+
+```jsx file=layout.astro
+---
+import Views from "@/components/Views.astro";
+---
+
+<Views slug={post.id} />
+```
+
 ## Prevent Fake Views
 
-By default, refreshing the page increases the counter.
+Right now every refresh counts as a new view. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
 
-To improve accuracy:
+- IP + slug cooldown
+- Fingerprint/User-Agent deduplication
+- Bot exclusion
+- Rate limiting
 
-- rate limiting
-- cookie/session check
-- IP + slug deduplication
-- `User-Agent` filtering
-- ignore bots
+Use the level of accuracy your project actually needs.
 
 ## Why This Approach Is Better Than Third-Party Analytics
 
@@ -324,21 +379,21 @@ This approach gives:
 
 ## FAQ
 
-### Does this work with Astro 6?
-
+<details><summary>Does this work with Astro 6?</summary>
 Yes.
+</details>
 
-### Can I use another database?
-
+<details><summary>Can I use another database?</summary>
 Yes. Any SQL database will work.
+</details>
 
-### Does it count duplicate refreshes?
-
+<details><summary>Does it count duplicate refreshes?</summary>
 Yes, by default.
+</details>
 
-### Is this full analytics?
-
+<details><summary> Is this full analytics?</summary>
 No. This is a focused **Astro page view counter** solution.
+</details>
 
 ## Conclusion
 
