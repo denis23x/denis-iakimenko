@@ -1,6 +1,7 @@
 import { defineConfig, envField, fontProviders } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import mermaid from "astro-mermaid";
+import favicons from "astro-favicons";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
@@ -25,6 +26,7 @@ export default defineConfig({
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
+    favicons(),
   ],
   markdown: {
     remarkPlugins: [
