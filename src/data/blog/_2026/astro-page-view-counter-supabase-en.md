@@ -122,7 +122,7 @@ create table public.views (
 ) TABLESPACE pg_default;
 ```
 
-It will create ready for work table for our analytics views. That’s it — just a table with numbers.
+It will create ready for work table for your analytics views. That’s it — just a table with numbers.
 
 ### Configure Access Policy
 
@@ -235,7 +235,7 @@ Deno.serve(async (req: Request) => {
 - uses atomic **UPSERT**
 - returns updated count immediately
 
-At the very bottom of the page in the **Function name** field, enter the name of our function `views` and click **Deploy Function**. You will then be redirected to the function settings page.
+At the very bottom of the page in the **Function name** field, enter the name of your function `views` and click **Deploy Function**. You will then be redirected to the function settings page.
 
 :::info
 In the function settings, find the **Verify JWT with legacy secret** parameter and disable it. Click **Save changes**.
@@ -243,9 +243,7 @@ In the function settings, find the **Verify JWT with legacy secret** parameter a
 This is necessary for publicly calling the function by all visitors of your site.
 :::
 
-At the very beginning of this page, you'll notice the address of our function, `https://hash.supabase.co/functions/v1/views`, where `hash` is a randomly generated set of characters.
-
-Follow that link and you should receive the following error:
+At the very beginning of this page, you'll notice the address of your function, `https://.../functions/v1/views` follow that link and you should receive the following error:
 
 ```json
 { "error": "Method not allowed" }
@@ -392,7 +390,7 @@ Yes, by default.
 </details>
 
 <details><summary> Is this full analytics?</summary>
-No. This is a focused **Astro page view counter** solution.
+No. This is a focused <strong>Astro page view counter</strong> solution.
 </details>
 
 ## Conclusion
