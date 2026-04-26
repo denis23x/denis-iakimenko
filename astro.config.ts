@@ -4,6 +4,8 @@ import mermaid from "astro-mermaid";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
+import remarkDirective from "remark-directive";
+import remarkCalloutDirectives from "@microflash/remark-callout-directives";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -24,7 +26,21 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
+    remarkPlugins: [
+      remarkDirective,
+      [
+        remarkCalloutDirectives,
+        {
+          aliases: {
+            danger: "deter",
+            success: "commend",
+            info: "assert",
+          },
+        },
+      ],
+      remarkToc,
+      [remarkCollapse, { test: "Table of contents" }],
+    ],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "github-dark-default" },
