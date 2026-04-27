@@ -20,18 +20,23 @@ import { SITE } from "./src/config";
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
-  devToolbar: { 
-    enabled: false 
+  devToolbar: {
+    enabled: false,
   },
   integrations: [
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
     AstroPWA({
-      mode: "development",
+      mode: import.meta.env.MODE as "development" | "production",
       base: "/",
       scope: "/",
-      includeAssets: ["favicon.svg"],
+      includeAssets: [
+        "favicon.ico",
+        "favicon.svg",
+        "apple-touch-icon.png",
+        "mask-icon.svg",
+      ],
       registerType: "autoUpdate",
       manifest: {
         name: "denis-iakimenko",
@@ -39,7 +44,7 @@ export default defineConfig({
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
-        theme_color: "#42b883",
+        theme_color: "#51a2ff",
         lang: "en",
         scope: "/",
         icons: [
@@ -71,8 +76,25 @@ export default defineConfig({
         config: true,
       },
       workbox: {
-        navigateFallback: "/",
-        globPatterns: ["**/*.{css,js,html,svg,png,ico,txt}"],
+        globPatterns: ["**/*.{css,js,html,png|jpg|jpeg|svg|webp,ico,woff2}"],
+        globIgnores: ["**/*.map"],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|webp)$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "images",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: false,

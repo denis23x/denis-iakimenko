@@ -55,6 +55,12 @@
       @apply mx-auto border border-border;
     }
 
+    figure {
+      svg {
+        @apply h-auto;
+      }
+    }
+
     figcaption {
       @apply opacity-75;
     }

@@ -55,8 +55,8 @@ Probably the most creative approach and much simpler than previous options.
 
 However, it depends on two third-party services ([corsproxy.io](https://corsproxy.io/) and [hits.seeyoufarm.com](http://hits.seeyoufarm.com/)). If one becomes unavailable, the counter stops working. That is a weak point for long-term use.
 
-:::danger
-By the way, right now one of the services is unavailable.
+:::warn
+Unfortunately, one of the services is no longer available, so this solution no longer works.
 :::
 
 ### Search Results Summary
@@ -151,7 +151,7 @@ Now comes the useful part. We need one public endpoint that:
 3. increments views atomically
 4. returns the latest count
 
-Open: `Edge Functions → Deploy a new function → Via Editor` and paste the next code:
+Open: `Edge Functions` then find the buttons `Deploy a new function → Via Editor` and paste the next code:
 
 ```ts file=views
 // Setup type definitions for built-in Supabase Runtime APIs

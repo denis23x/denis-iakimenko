@@ -34,6 +34,7 @@ export default function remarkBeautifulMermaid() {
           // line: '#3d59a1',
           // surface: '#292e42',
           border: 'var(--border)',
+          padding: 16,
           transparent: true,
         });
 
