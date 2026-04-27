@@ -28,3 +28,9 @@ public/pagefind
 
 # obsidian
 .obsidian/cache
+
+# sw
+.sw/
+
+# pnpm store
+.pnpm-store/

@@ -3,6 +3,8 @@ import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
+import { pwaInfo } from "virtual:pwa-info";
+import { pwaAssetsHead } from "virtual:pwa-assets/head";
 import "@/styles/global.css";
 
 type Props = {
@@ -60,6 +62,13 @@ const structuredData = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
+
+    {
+      pwaAssetsHead.themeColor && (
+        <meta name="theme-color" content={pwaAssetsHead.themeColor.content} />
+      )
+    }
+    {pwaAssetsHead.links.map(link => <link {...link} />)}
 
     <!-- Load Font -->
     <Font
@@ -166,6 +175,9 @@ const structuredData = {
         };
       })();
     </script>
+
+    <script src="/src/pwa.ts"></script>
+    {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
   </head>
   <body>
     <slot />

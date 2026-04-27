@@ -1,8 +1,9 @@
 import { defineConfig, envField, fontProviders } from "astro/config";
+import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 import mermaid from "astro-mermaid";
-import favicons from "astro-favicons";
 import sitemap from "@astrojs/sitemap";
+import AstroPWA from "@vite-pwa/astro";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import remarkDirective from "remark-directive";
@@ -19,6 +20,9 @@ import { SITE } from "./src/config";
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
+  devToolbar: { 
+    enabled: false 
+  },
   integrations: [
     mermaid({
       autoTheme: true,
@@ -26,7 +30,59 @@ export default defineConfig({
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
-    favicons(),
+    AstroPWA({
+      mode: "development",
+      base: "/",
+      scope: "/",
+      includeAssets: ["favicon.svg"],
+      registerType: "autoUpdate",
+      manifest: {
+        name: "denis-iakimenko",
+        short_name: "denis-iakimenko",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#42b883",
+        lang: "en",
+        scope: "/",
+        icons: [
+          {
+            src: "pwa-64x64.png",
+            sizes: "64x64",
+            type: "image/png",
+          },
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+      pwaAssets: {
+        config: true,
+      },
+      workbox: {
+        navigateFallback: "/",
+        globPatterns: ["**/*.{css,js,html,svg,png,ico,txt}"],
+      },
+      devOptions: {
+        enabled: false,
+        navigateFallbackAllowlist: [/^\/$/],
+        resolveTempFolder: () => path.resolve(process.cwd(), ".sw"),
+      },
+    }),
   ],
   markdown: {
     remarkPlugins: [
@@ -82,17 +138,14 @@ export default defineConfig({
       }),
     },
   },
-  experimental: {
-    preserveScriptOrder: true,
-    fonts: [
-      {
-        name: "Google Sans Code",
-        cssVariable: "--font-google-sans-code",
-        provider: fontProviders.google(),
-        fallbacks: ["monospace"],
-        weights: [300, 400, 500, 600, 700],
-        styles: ["normal", "italic"],
-      },
-    ],
-  },
+  fonts: [
+    {
+      name: "Google Sans Code",
+      cssVariable: "--font-google-sans-code",
+      provider: fontProviders.google(),
+      fallbacks: ["monospace"],
+      weights: [300, 400, 500, 600, 700],
+      styles: ["normal", "italic"],
+    },
+  ],
 });
