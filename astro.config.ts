@@ -7,6 +7,7 @@ import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import remarkDirective from "remark-directive";
 import remarkCalloutDirectives from "@microflash/remark-callout-directives";
+import remarkBeautifulMermaid from "./src/utils/remark/remarkBeautifulMermaid";
 import rehypeLinkPolicy from "./src/utils/rehype/rehypeLinkPolicy";
 import {
   transformerNotationDiff,
@@ -93,6 +94,7 @@ export default defineConfig({
           },
         },
       ],
+      remarkBeautifulMermaid,
       remarkToc,
       [remarkCollapse, { test: "Table of contents" }],
     ],
