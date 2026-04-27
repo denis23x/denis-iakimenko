@@ -1,7 +1,6 @@
 import { defineConfig, envField, fontProviders } from "astro/config";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
-import mermaid from "astro-mermaid";
 import sitemap from "@astrojs/sitemap";
 import AstroPWA from "@vite-pwa/astro";
 import remarkToc from "remark-toc";
@@ -24,9 +23,6 @@ export default defineConfig({
     enabled: false 
   },
   integrations: [
-    mermaid({
-      autoTheme: true,
-    }),
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
@@ -121,7 +117,6 @@ export default defineConfig({
     // See: https://github.com/withastro/astro/issues/14030
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: ["mermaid"],
       exclude: ["@resvg/resvg-js"],
     },
   },
