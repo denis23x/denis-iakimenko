@@ -34,3 +34,6 @@ public/pagefind
 
 # pnpm store
 .pnpm-store/
+
+# raw materials
+src/data/raw/
