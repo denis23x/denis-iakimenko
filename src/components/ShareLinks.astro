@@ -1,6 +1,7 @@
 ---
 import { SHARE_LINKS } from "@/constants";
 import LinkButton from "./LinkButton.astro";
+import IconShare from "@/assets/icons/IconShare.svg";
 
 const URL = Astro.url;
 ---
@@ -9,12 +10,22 @@ const URL = Astro.url;
   SHARE_LINKS.length > 0 && (
     <div class="flex flex-none flex-col items-center justify-center gap-1 md:items-start">
       <span class="italic">Share this post on:</span>
-      <div class="text-center">
+      <div class="flex">
+        <button
+          id="share-button"
+          type="button"
+          class="group scale-90 p-2 hover:rotate-6 hover:text-accent sm:p-1"
+        >
+          <IconShare class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
+          <span class="sr-only">Share this post</span>
+        </button>
         {SHARE_LINKS.map(social => (
           <LinkButton
-            href={`${social.href + URL}`}
+            href={`${social.href + encodeURIComponent(URL.toString())}`}
             class="scale-90 p-2 hover:rotate-6 sm:p-1"
             title={social.linkTitle}
+            target="_blank"
+            rel="noopener"
           >
             <social.icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
             <span class="sr-only">{social.linkTitle}</span>
@@ -24,3 +35,27 @@ const URL = Astro.url;
     </div>
   )
 }
+
+<script define:vars={{ url: URL.toString() }} is:inline data-astro-rerun>
+  const el = document.getElementById("share-button");
+
+  if (el) {
+    const share = async () => {
+      if (
+        typeof navigator !== "undefined" &&
+        typeof navigator.share === "function"
+      ) {
+        try {
+          await navigator.share({
+            title: document.title,
+            url,
+          });
+        } catch {
+          // User canceled share action or platform rejected it.
+        }
+      }
+    };
+
+    el.addEventListener("click", share);
+  }
+</script>
