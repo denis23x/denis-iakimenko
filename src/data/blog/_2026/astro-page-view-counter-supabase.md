@@ -1,6 +1,6 @@
 ---
 title: Astro Page View Counter with Supabase Edge Functions
-description: Learn how to build a lightweight Astro page view counter using Supabase Postgres, Edge Functions, and a tiny Astro component. No third-party analytics required.
+description: Learn how to build a lightweight page view counter using Supabase Postgres, Edge Functions, and a tiny Astro component. No third-party analytics required.
 pubDatetime: 2022-09-23T15:22:00Z
 modDatetime: 2026-04-26T00:00:00Z
 author: Denis Iakimenko
@@ -11,10 +11,10 @@ tags:
   - astro
   - supabase
   - analytics
-  - page views
-  - edge functions
+  - page-views
+  - edge-functions
   - postgres
-  - astro blog
+  - astro-blog
 ---
 
 ## Table of contents
@@ -227,7 +227,7 @@ Deno.serve(async (req: Request) => {
 });
 ```
 
-### Code Review
+### Edge Function: Code Review
 
 - restrict `corsHeaders` to your domain
 - handles `OPTIONS` and `POST`
@@ -338,7 +338,7 @@ const { slug } = Astro.props;
 </script>
 ```
 
-### Code Review
+### Astro Component: Code Review
 
 - replace icon with your own
 - replace endpoint with your function URL
@@ -357,9 +357,9 @@ import Views from "@/components/Views.astro";
 
 Right now every refresh counts as a new view. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
 
-- IP + slug cooldown
-- Fingerprint/User-Agent deduplication
-- Bot exclusion
+- IP cooldown
+- Fingerprint deduplication
+- Bot exclusion (known bots/crawlers/suspicious traffic)
 - Rate limiting
 
 Use the level of accuracy your project actually needs.
@@ -377,20 +377,25 @@ This approach gives:
 
 ## FAQ
 
-<details><summary>Does this work with Astro 6?</summary>
-Yes.
+<details><summary>Does this work with Astro static output mode?</summary>
+Yes. The view counter uses a client-side fetch call, so it works with 
+fully static Astro output. No server-side rendering required.
 </details>
 
-<details><summary>Can I use another database?</summary>
-Yes. Any SQL database will work.
+<details><summary>Will this count my own visits during development?</summary>
+Yes, by default. To exclude yourself, either add an IP-based cooldown 
+in the Edge Function or simply ignore the count until you deploy.
 </details>
 
-<details><summary>Does it count duplicate refreshes?</summary>
-Yes, by default.
+<details><summary>Can I use this with a database other than Supabase?</summary>
+Yes — any database with an HTTP-accessible endpoint works. You'd replace 
+the Edge Function with your own API route and adjust the UPSERT query for 
+your SQL dialect.
 </details>
 
-<details><summary> Is this full analytics?</summary>
-No. This is a focused <strong>Astro page view counter</strong> solution.
+<details><summary>Is this a replacement for analytics platforms?</summary>
+No. This only tracks raw page views per slug. It has no referrer data, 
+session tracking, bounce rates, or geography.
 </details>
 
 ## Conclusion
