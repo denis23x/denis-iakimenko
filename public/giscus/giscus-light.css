@@ -49,7 +49,7 @@ body,
 }
 
 .gsc-reactions-popover::before {
-  inset-inline-start: 4px;
+  inset-inline-start: 4px !important;
 }
 
 .gsc-emoji-button.has-reacted {
