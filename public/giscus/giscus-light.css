@@ -19,6 +19,10 @@ body,
   font-family: "Google Sans Code", monospace !important;
 }
 
+.gsc-loading-text {
+  color: #51a2ff;
+}
+
 .gsc-reactions {
   justify-content: flex-start;
   align-items: flex-start;
@@ -34,4 +38,20 @@ body,
 
 .gsc-comment-box-buttons {
   color: #51a2ff;
+}
+
+.gsc-reactions-popover {
+  background: #ffffff;
+}
+
+.gsc-reactions-popover.bottom {
+  inset-inline-start: 0;
+}
+
+.gsc-reactions-popover::before {
+  inset-inline-start: 4px;
+}
+
+.gsc-emoji-button.has-reacted {
+  background: #e5e5e5;
 }

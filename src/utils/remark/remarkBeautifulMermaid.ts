@@ -20,31 +20,35 @@ type HtmlNode = {
 
 export default function remarkBeautifulMermaid() {
   return (tree: Tree) => {
-    visit(tree, "code", (node: CodeNode, index, parent: ParentNode | undefined) => {
-      const lang = node.lang?.trim().toLowerCase();
-      if (lang !== "mermaid") return;
-      if (typeof index !== "number" || !parent?.children) return;
+    visit(
+      tree,
+      "code",
+      (node: CodeNode, index, parent: ParentNode | undefined) => {
+        const lang = node.lang?.trim().toLowerCase();
+        if (lang !== "mermaid") return;
+        if (typeof index !== "number" || !parent?.children) return;
 
-      try {
-        const svg = renderMermaidSVG(node.value, {
-          bg: 'var(--background)',
-          fg: 'var(--foreground)',
-          accent: 'var(--accent)',
-          muted: 'var(--muted)',
-          // line: '#3d59a1',
-          // surface: '#292e42',
-          border: 'var(--border)',
-          padding: 16,
-          transparent: true,
-        });
+        try {
+          const svg = renderMermaidSVG(node.value, {
+            bg: "var(--background)",
+            fg: "var(--foreground)",
+            accent: "var(--accent)",
+            muted: "var(--muted)",
+            // line: '#3d59a1',
+            // surface: '#292e42',
+            border: "var(--border)",
+            padding: 16,
+            transparent: true,
+          });
 
-        parent.children[index] = {
-          type: "html",
-          value: `<figure class="flex not-prose overflow-x-auto">${svg}</figure>`,
-        } satisfies HtmlNode;
-      } catch {
-        // Keep original mermaid code block when render fails.
+          parent.children[index] = {
+            type: "html",
+            value: `<figure class="flex border rounded-sm not-prose overflow-x-auto">${svg}</figure>`,
+          } satisfies HtmlNode;
+        } catch {
+          // Keep original mermaid code block when render fails.
+        }
       }
-    });
+    );
   };
 }
