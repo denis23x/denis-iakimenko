@@ -1,0 +1,56 @@
+<script
+  src="https://giscus.app/client.js"
+  data-repo="denis23x/denis-iakimenko"
+  data-repo-id="R_kgDOSLR_ew"
+  data-category="General"
+  data-category-id="DIC_kwDOSLR_e84C74SJ"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="/giscus-light.css"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  defer></script>
+
+<script is:inline>
+  const giscusThemeLight = `${window.location.origin}/giscus-light.css`;
+  const giscusThemeDark = `${window.location.origin}/giscus-dark.css`;
+
+  function resolveGiscusTheme() {
+    const theme = document.documentElement.getAttribute("data-theme");
+    return theme === "dark" ? giscusThemeDark : giscusThemeLight;
+  }
+
+  function syncGiscusTheme() {
+    const giscusTheme = resolveGiscusTheme();
+    const giscusScript = document.querySelector(
+      "script[src='https://giscus.app/client.js']"
+    );
+    const giscusFrame = document.querySelector("iframe.giscus-frame");
+
+    giscusScript?.setAttribute("data-theme", giscusTheme);
+
+    giscusFrame?.contentWindow?.postMessage(
+      {
+        giscus: {
+          setConfig: {
+            theme: giscusTheme,
+          },
+        },
+      },
+      "https://giscus.app"
+    );
+  }
+
+  const themeObserver = new MutationObserver(() => syncGiscusTheme());
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+
+  syncGiscusTheme();
+  document.addEventListener("astro:after-swap", syncGiscusTheme);
+</script>

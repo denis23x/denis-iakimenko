@@ -1,0 +1,11 @@
+.giscus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .giscus-frame {
+    min-height: auto !important;
+    font-family: monospace;
+  }
+}

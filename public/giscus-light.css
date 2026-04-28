@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..700;1,300..700&display=swap");
+
+:root {
+  --font-family: "Google Sans Code", monospace;
+  --color-canvas-default: #ffffff;
+  --color-fg-default: #111111;
+  --color-border-default: #e5e5e5;
+  --color-prettylights-syntax-comment: #6b7280;
+  --color-prettylights-syntax-keyword: #7c3aed;
+  --color-prettylights-syntax-entity-tag: #111111;
+  --color-prettylights-syntax-string: #065f46;
+}
+
+body,
+.gsc-main,
+.gsc-comment,
+.gsc-comment-box,
+.gsc-reactions {
+  font-family: "Google Sans Code", monospace !important;
+}

@@ -366,14 +366,20 @@ Use the level of accuracy your project actually needs.
 
 ## Why This Approach Is Better Than Third-Party Analytics
 
-If you only need a **page views counter**, a full analytics platform is often unnecessary.
+If you only need page view counts, tools like Google Analytics or Plausible 
+are simply overkill. They load external scripts, add latency, and hand your 
+visitor data to a third party.
 
-This approach gives:
+This setup keeps everything under your control:
 
-- full data ownership
-- minimal frontend overhead
-- simple architecture
-- no external dependency
+- **Full data ownership** — views live in your own Supabase Postgres, 
+  not someone else's dashboard
+- **Minimal frontend overhead** — one small fetch call fired on idle, 
+  nothing injected at page load
+- **Simple architecture** — one table, one Edge Function, one component. 
+  Easy to debug, easy to replace
+- **No external dependency** — if Supabase goes down, your site still loads. 
+  The counter just shows `…`
 
 ## FAQ
 
