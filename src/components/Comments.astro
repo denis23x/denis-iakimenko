@@ -9,15 +9,15 @@
   data-reactions-enabled="1"
   data-emit-metadata="0"
   data-input-position="bottom"
-  data-theme="/giscus-light.css"
+  data-theme="/giscus/giscus-light.css"
   data-lang="en"
   data-loading="lazy"
   crossorigin="anonymous"
   defer></script>
 
 <script is:inline>
-  const giscusThemeLight = `${window.location.origin}/giscus-light.css`;
-  const giscusThemeDark = `${window.location.origin}/giscus-dark.css`;
+  const giscusThemeLight = `${window.location.origin}/giscus/giscus-light.css`;
+  const giscusThemeDark = `${window.location.origin}/giscus/giscus-dark.css`;
 
   function resolveGiscusTheme() {
     const theme = document.documentElement.getAttribute("data-theme");

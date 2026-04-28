@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..700;1,300..700&display=swap");
 
+:host,
+html {
+  --font-family-sans: "Google Sans Code", monospace;
+  --font-family-monospace: "Google Sans Code", monospace;
+  --font-family-default: "Google Sans Code", monospace;
+}
+
 :root {
   --font-family: "Google Sans Code", monospace;
   --color-canvas-default: #0b0b0c;
@@ -17,4 +24,8 @@ body,
 .gsc-comment-box,
 .gsc-reactions {
   font-family: "Google Sans Code", monospace !important;
+}
+
+.gsc-comment-box-buttons {
+  color: #ff4848;
 }

@@ -18,3 +18,7 @@ body,
 .gsc-reactions {
   font-family: "Google Sans Code", monospace !important;
 }
+
+.gsc-comment-box-buttons {
+  color: #51a2ff;
+}
