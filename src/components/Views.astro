@@ -11,7 +11,10 @@ const { slug } = Astro.props;
 <span class="inline-flex items-center gap-x-2 opacity-80">
   <IconEyeIcon />
   <span class="sr-only">Views</span>
-  <span data-views-slug={slug}>…</span>
+  <span
+    class="inline-block min-w-[4ch] text-left text-sm tabular-nums sm:text-base"
+    data-views-slug={slug}>…</span
+  >
 </span>
 
 <script define:vars={{ slug }} is:inline data-astro-rerun>
@@ -67,7 +70,11 @@ const { slug } = Astro.props;
     }
 
     const render = (el, value) => {
-      el.textContent = new Intl.NumberFormat().format(Number(value));
+      const text = new Intl.NumberFormat().format(Number(value));
+
+      requestAnimationFrame(() => {
+        el.textContent = text;
+      });
     };
 
     const fallback = el => {
@@ -117,8 +124,12 @@ const { slug } = Astro.props;
       load(controller.signal);
     }, controller.signal);
 
-    document.addEventListener("astro:before-swap", () => {
-      window[cleanupKey]?.();
-    }, { once: true, signal: controller.signal });
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        window[cleanupKey]?.();
+      },
+      { once: true, signal: controller.signal }
+    );
   })();
 </script>

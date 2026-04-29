@@ -18,6 +18,18 @@ type HtmlNode = {
   value: string;
 };
 
+function removeRemoteFontImports(svg: string) {
+  return svg
+    .replace(
+      /\s*@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=[^']+'\);/g,
+      ""
+    )
+    .replace(
+      /text \{ font-family: '[^']+', system-ui, sans-serif; \}/,
+      "text { font-family: var(--font-google-sans-code), ui-monospace, monospace; }"
+    );
+}
+
 export default function remarkBeautifulMermaid() {
   return (tree: Tree) => {
     visit(
@@ -29,17 +41,19 @@ export default function remarkBeautifulMermaid() {
         if (typeof index !== "number" || !parent?.children) return;
 
         try {
-          const svg = renderMermaidSVG(node.value, {
-            bg: "var(--background)",
-            fg: "var(--foreground)",
-            accent: "var(--accent)",
-            muted: "var(--muted)",
-            // line: '#3d59a1',
-            // surface: '#292e42',
-            border: "var(--border)",
-            padding: 16,
-            transparent: true,
-          });
+          const svg = removeRemoteFontImports(
+            renderMermaidSVG(node.value, {
+              bg: "var(--background)",
+              fg: "var(--foreground)",
+              accent: "var(--accent)",
+              muted: "var(--muted)",
+              // line: '#3d59a1',
+              // surface: '#292e42',
+              border: "var(--border)",
+              padding: 16,
+              transparent: true,
+            })
+          );
 
           parent.children[index] = {
             type: "html",

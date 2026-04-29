@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
+import "@/styles/typography.css";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Tag from "@/components/Tag.astro";
@@ -175,11 +176,18 @@ const nextPost =
       document.querySelectorAll("h2, h3, h4, h5, h6")
     );
     for (const heading of headings) {
+      if (!heading.id || heading.querySelector(".heading-link")) continue;
+
       heading.classList.add("group");
+
       const link = document.createElement("a");
+      const label = heading.textContent?.trim() || "section";
+
       link.className =
         "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
       link.href = "#" + heading.id;
+      link.ariaLabel = `Link to ${label}`;
+      link.title = `Link to ${label}`;
 
       const span = document.createElement("span");
       span.ariaHidden = "true";
