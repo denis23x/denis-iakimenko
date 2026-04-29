@@ -33,56 +33,112 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 </div>
 
 <script is:inline data-astro-rerun>
-  /** Scrolls the document to the top when
-   * the "Back to Top" button is clicked. */
-  function backToTop() {
-    const rootElement = document.documentElement;
-    const btnContainer = document.querySelector("#btt-btn-container");
-    const backToTopBtn = document.querySelector("[data-button='back-to-top']");
-    const progressIndicator = document.querySelector("#progress-indicator");
+  (() => {
+    const cleanupKey = "__backToTopCleanup";
 
-    if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator)
-      return;
+    function runAfterLoadAndIdle(callback, signal) {
+      let idleId;
 
-    // Attach click event handler for back-to-top button
-    backToTopBtn.addEventListener("click", () => {
-      document.body.scrollTop = 0; // For Safari
-      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    });
+      const runWhenIdle = () => {
+        if (signal.aborted) return;
 
-    // Handle button visibility according to scroll position
-    let lastVisible = null;
-    function handleScroll() {
-      const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
-      const scrollTop = rootElement.scrollTop;
-      const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
+        if ("requestIdleCallback" in window) {
+          idleId = requestIdleCallback(callback, { timeout: 1500 });
+          return;
+        }
 
-      progressIndicator.style.setProperty(
-        "background-image",
-        `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`
+        idleId = window.setTimeout(callback, 0);
+      };
+
+      if (document.readyState === "complete") {
+        runWhenIdle();
+      } else {
+        window.addEventListener("load", runWhenIdle, {
+          once: true,
+          signal,
+        });
+      }
+
+      signal.addEventListener(
+        "abort",
+        () => {
+          if (idleId === undefined) return;
+
+          if ("cancelIdleCallback" in window) {
+            cancelIdleCallback(idleId);
+          } else {
+            clearTimeout(idleId);
+          }
+        },
+        { once: true }
       );
+    }
 
-      const isVisible = scrollTop / scrollTotal > 0.3;
+    /** Scrolls the document to the top when
+     * the "Back to Top" button is clicked. */
+    function backToTop(signal) {
+      const rootElement = document.documentElement;
+      const btnContainer = document.querySelector("#btt-btn-container");
+      const backToTopBtn = document.querySelector("[data-button='back-to-top']");
+      const progressIndicator = document.querySelector("#progress-indicator");
 
-      if (isVisible !== lastVisible) {
+      if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator) {
+        return;
+      }
+
+      backToTopBtn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, { signal });
+
+      function updateButtonState() {
+        const scrollTotal = Math.max(
+          rootElement.scrollHeight - rootElement.clientHeight,
+          1
+        );
+        const scrollTop = rootElement.scrollTop;
+        const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
+        const isVisible = scrollTop / scrollTotal > 0.3;
+
+        progressIndicator.style.setProperty(
+          "background-image",
+          `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`
+        );
+
         btnContainer.classList.toggle("opacity-100", isVisible);
         btnContainer.classList.toggle("translate-y-0", isVisible);
         btnContainer.classList.toggle("opacity-0", !isVisible);
         btnContainer.classList.toggle("translate-y-14", !isVisible);
-        lastVisible = isVisible;
       }
-    }
 
-    let ticking = false;
-    document.addEventListener("scroll", () => {
-      if (!ticking) {
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+
+        ticking = true;
         window.requestAnimationFrame(() => {
-          handleScroll();
+          updateButtonState();
           ticking = false;
         });
-        ticking = true;
-      }
-    });
-  }
-  backToTop();
+      };
+
+      updateButtonState();
+      document.addEventListener("scroll", onScroll, { passive: true, signal });
+    }
+
+    window[cleanupKey]?.();
+
+    const controller = new AbortController();
+
+    runAfterLoadAndIdle(() => {
+      backToTop(controller.signal);
+    }, controller.signal);
+
+    document.addEventListener("astro:before-swap", () => {
+      window[cleanupKey]?.();
+    }, { once: true, signal: controller.signal });
+
+    window[cleanupKey] = () => {
+      controller.abort();
+    };
+  })();
 </script>

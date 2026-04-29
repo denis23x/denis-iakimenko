@@ -11,29 +11,73 @@ const { slug } = Astro.props;
 <span class="inline-flex items-center gap-x-2 opacity-80">
   <IconEyeIcon />
   <span class="sr-only">Views</span>
-  <span id="views">…</span>
+  <span data-views-slug={slug}>…</span>
 </span>
 
 <script define:vars={{ slug }} is:inline data-astro-rerun>
   (() => {
-    if (!slug) return;
-
-    const el = document.getElementById("views");
-
-    if (!(el instanceof HTMLElement)) return;
-
+    const cleanupKey = "__viewsCleanup";
     const endpoint =
       "https://unhtenrcalfzvebisnkj.supabase.co/functions/v1/views";
 
-    const render = value => {
+    if (!slug) return;
+
+    function runAfterLoadAndIdle(callback, signal) {
+      let idleId;
+
+      const runWhenIdle = () => {
+        if (signal.aborted) return;
+
+        if ("requestIdleCallback" in window) {
+          idleId = requestIdleCallback(callback, { timeout: 1000 });
+          return;
+        }
+
+        idleId = window.setTimeout(callback, 0);
+      };
+
+      if (document.readyState === "complete") {
+        runWhenIdle();
+      } else {
+        window.addEventListener("load", runWhenIdle, {
+          once: true,
+          signal,
+        });
+      }
+
+      signal.addEventListener(
+        "abort",
+        () => {
+          if (idleId === undefined) return;
+
+          if ("cancelIdleCallback" in window) {
+            cancelIdleCallback(idleId);
+          } else {
+            clearTimeout(idleId);
+          }
+        },
+        { once: true }
+      );
+    }
+
+    function findCounterElement() {
+      const selector = `[data-views-slug="${CSS.escape(slug)}"]`;
+      const el = document.querySelector(selector);
+      return el instanceof HTMLElement ? el : null;
+    }
+
+    const render = (el, value) => {
       el.textContent = new Intl.NumberFormat().format(Number(value));
     };
 
-    const fallback = () => {
+    const fallback = el => {
       el.textContent = "…";
     };
 
-    const load = async () => {
+    const load = async signal => {
+      const el = findCounterElement();
+      if (!el) return;
+
       try {
         const res = await fetch(endpoint, {
           method: "POST",
@@ -44,27 +88,37 @@ const { slug } = Astro.props;
           keepalive: true,
           credentials: "omit",
           cache: "no-store",
+          signal,
         });
 
         if (!res.ok) {
-          fallback();
+          fallback(el);
           return;
         }
 
         const value = await res.json();
-
-        render(value);
-      } catch {
-        fallback();
+        render(el, value);
+      } catch (error) {
+        if (error?.name !== "AbortError") {
+          fallback(el);
+        }
       }
     };
 
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(load, {
-        timeout: 1000,
-      });
-    } else {
-      setTimeout(load, 0);
-    }
+    window[cleanupKey]?.();
+
+    const controller = new AbortController();
+
+    window[cleanupKey] = () => {
+      controller.abort();
+    };
+
+    runAfterLoadAndIdle(() => {
+      load(controller.signal);
+    }, controller.signal);
+
+    document.addEventListener("astro:before-swap", () => {
+      window[cleanupKey]?.();
+    }, { once: true, signal: controller.signal });
   })();
 </script>

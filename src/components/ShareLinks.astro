@@ -37,25 +37,27 @@ const URL = Astro.url;
 }
 
 <script define:vars={{ url: URL.toString() }} is:inline data-astro-rerun>
-  const el = document.getElementById("share-button");
+  (() => {
+    const el = document.getElementById("share-button");
 
-  if (el) {
-    const share = async () => {
-      if (
-        typeof navigator !== "undefined" &&
-        typeof navigator.share === "function"
-      ) {
-        try {
-          await navigator.share({
-            title: document.title,
-            url,
-          });
-        } catch {
-          // User canceled share action or platform rejected it.
+    if (el) {
+      const share = async () => {
+        if (
+          typeof navigator !== "undefined" &&
+          typeof navigator.share === "function"
+        ) {
+          try {
+            await navigator.share({
+              title: document.title,
+              url,
+            });
+          } catch {
+            // User canceled share action or platform rejected it.
+          }
         }
-      }
-    };
+      };
 
-    el.addEventListener("click", share);
-  }
+      el.onclick = share;
+    }
+  })();
 </script>
