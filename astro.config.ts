@@ -29,6 +29,11 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
+      serialize(item) {
+        // remove trailing slash from url
+        item.url = item.url.replace(/\/+$/, "");
+        return item;
+      },
     }),
     AstroPWA({
       mode: import.meta.env.MODE as "development" | "production",
