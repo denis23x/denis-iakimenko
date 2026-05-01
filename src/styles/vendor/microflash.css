@@ -92,6 +92,10 @@ summary > .callout-indicator {
   p:last-child {
     margin-bottom: 0;
   }
+
+  hr {
+    margin: 16px 0;
+  }
 }
 
 .callout-content:first-child,

@@ -12,7 +12,16 @@ type RehypeElementNode = {
 };
 
 export default function rehypeLinkPolicy() {
-  const trusted = ["supabase.com", "postman.com", "apidog.com"];
+  const trusted = [
+    "supabase.com",
+    "postman.com",
+    "apidog.com",
+    "google.com",
+    "developers.google.com",
+    "mozilla.org",
+    "developer.mozilla.org",
+    "plausible.io",
+  ];
   const sponsored: string[] = [];
 
   return (tree: Tree) => {

@@ -1,10 +1,10 @@
 ---
-title: Astro Page View Counter with Supabase Edge Functions
-description: Learn how to build a lightweight page view counter using Supabase Postgres, Edge Functions, and a tiny Astro component. No third-party analytics required.
-pubDatetime: 2022-09-23T15:22:00Z
-modDatetime: 2026-04-26T00:00:00Z
+title: How to Build an Astro Page View Counter with Supabase Edge Functions
+description: Build a self-hosted page view counter for your Astro blog using Supabase Postgres and Edge Functions. Full data ownership, no Google Analytics, no external scripts.
+pubDatetime: 2026-04-26T10:00:00Z
+modDatetime: 2026-05-01T21:00:00Z
 author: Denis Iakimenko
-slug: astro-page-view-counter-supabase
+slug: astro-page-view-counter-supabase-edge-functions
 featured: false
 draft: false
 tags:
@@ -22,7 +22,6 @@ tags:
 ## Introduction
 
 After setting up **Astro 6**, one question immediately came to mind:
-
 How do you add a proper **page view counter** to an Astro blog without installing a heavy analytics platform?
 
 At first, it looked like there should be many ready-made solutions. There were. But after reviewing them, most were either too complex, too dependent on third-party services, or simply not something I would trust long-term.
@@ -37,21 +36,21 @@ Naturally, the first thing I did was search for existing solutions. If someone a
 
 Here are the most relevant implementations I found — and why none of them fully worked for me.
 
-> [https://crockettford.dev/blog/astro-blog-views-counter](https://crockettford.dev/blog/astro-blog-views-counter)
+[https://crockettford.dev/blog/astro-blog-views-counter](https://crockettford.dev/blog/astro-blog-views-counter)
 
 A fairly simple implementation. Good overall, but highly specific. Best suited for people already using **Coolify** and **Docker**.
 
 It also introduces a less native database workflow (**schema**, **connection**, **select**, **increment**), which may be unnecessary complexity for a blog owner.
 
-> [https://mvlanga.com/blog/how-to-build-a-page-view-counter-with-astro-db-actions-and-server-side-islands/](https://mvlanga.com/blog/how-to-build-a-page-view-counter-with-astro-db-actions-and-server-side-islands/)
+[https://mvlanga.com/blog/how-to-build-a-page-view-counter-with-astro-db-actions-and-server-side-islands/](https://mvlanga.com/blog/how-to-build-a-page-view-counter-with-astro-db-actions-and-server-side-islands/)
 
 There's a fair amount of unnecessary code here (in my opinion). A display component and two more for of updating views (**Vanilla** vs. **React**). How is one better than the other, and which should I ultimately use?
 
 Also, the author didn't explain the data storage layer. Where does **Astro DB** connect to, and where will the view data be stored?
 
-> [https://elazizi.com/posts/add-views-counter-to-your-astro-blog-posts/](https://elazizi.com/posts/add-views-counter-to-your-astro-blog-posts/)
+[https://elazizi.com/posts/add-views-counter-to-your-astro-blog-posts/](https://elazizi.com/posts/add-views-counter-to-your-astro-blog-posts/)
 
-Probably the most creative approach and much simpler than previous options.
+This is the most creative approach of the three and the simplest to set up.
 
 However, it depends on two third-party services ([corsproxy.io](https://corsproxy.io/) and [hits.seeyoufarm.com](http://hits.seeyoufarm.com/)). If one becomes unavailable, the counter stops working. That is a weak point for long-term use.
 
@@ -75,13 +74,7 @@ So I decided to build my own version: simple, practical, and independent **Astro
 
 ## The Plan
 
-We’ll use:
-
-- **Supabase Postgres** for storing page views
-- **Supabase Edge Functions** for secure backend logic
-- a lightweight **Astro component** for rendering views on the page
-
-Small stack with clear responsibilities. All logic for updating and returning views will live in the backend.
+We'll use **Supabase Postgres** for storage, an **Edge Function** as the backend layer, and a tiny **Astro** component on the frontend. The key design decision: all mutation logic stays in the **Edge Function**, not in the browser. This keeps the public surface area minimal — the component only calls one endpoint and renders one number.
 
 ```mermaid
 sequenceDiagram
@@ -122,7 +115,9 @@ create table public.views (
 ) TABLESPACE pg_default;
 ```
 
-It will create ready for work table for your analytics views. That’s it — just a table with numbers.
+What this table gives you: <u>slug is unique</u> — so each page has exactly one row. `views` starts at `0` and is incremented atomically by the **Edge Function**. No application code manages row creation, the `UPSERT` in the function handles both insert and update.
+
+See the [Supabase Table Editor docs](https://supabase.com/docs/guides/database/tables) if you prefer a visual interface over SQL.
 
 ### Configure Access Policy
 
@@ -134,7 +129,7 @@ For table `views`, create policy:
 
 - Policy Name: `Public Read`
 - Policy Command: `SELECT`
-- Below in the code editor, immediately after the line `using`, type `true`.
+- Below in the policy expression editor, immediately after the line `using`, type `true`.
 
 All other settings remain unchanged.
 
@@ -144,7 +139,7 @@ Now the table is publicly readable. For a simple page view counter with no perso
 
 ## Edge Function
 
-Now comes the useful part. We need one public endpoint that:
+Now comes the useful part. Supabase [Edge Functions](https://supabase.com/docs/guides/functions) run on Deno and are deployed globally. We need single public endpoint that:
 
 1. receives a page slug
 2. creates the row if missing
@@ -227,9 +222,12 @@ Deno.serve(async (req: Request) => {
 });
 ```
 
-### Edge Function: Code Review
+### Function: What to customize
 
 - restrict `corsHeaders` to your domain
+
+### Function: How it works
+
 - handles `OPTIONS` and `POST`
 - validates `slug`
 - uses atomic **UPSERT**
@@ -238,12 +236,12 @@ Deno.serve(async (req: Request) => {
 At the very bottom of the page in the **Function name** field, enter the name of your function `views` and click **Deploy Function**. You will then be redirected to the function settings page.
 
 :::info
-In the function settings, find the **Verify JWT with legacy secret** parameter and disable it. Click **Save changes**.
-
-This is necessary for publicly calling the function by all visitors of your site.
+In the function settings, disable **Verify JWT with legacy secret** and click **Save changes**. This makes the function publicly callable — which is what we want for a view counter. The function is safe to expose publicly because it only accepts a slug string and performs a single `UPSERT`.
 :::
 
-At the very beginning of this page, you'll notice the address of your function, `https://.../functions/v1/views` follow that link and you should receive the following error:
+### Function: Verification
+
+At the very beginning of the function page you'll notice the address of your function, `https://.../functions/v1/views` follow that link and you should receive the following error:
 
 ```json
 { "error": "Method not allowed" }
@@ -338,12 +336,16 @@ const { slug } = Astro.props;
 </script>
 ```
 
-### Astro Component: Code Review
+### Component: What to customize
 
-- replace icon with your own
-- replace endpoint with your function URL
-- uses `requestIdleCallback`
-- does not block initial page render
+- replace the icon with your own
+- replace the endpoint with your function URL
+
+### Component: How it works
+
+- fires on `requestIdleCallback`, so it does not block initial page render
+
+[requestIdleCallback](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback) schedules work during browser idle time. MDN has a full reference if you need it.
 
 Once you've created the view counter component, you can use it as follows: declare the component's import, add it to your layout, and pass the current page's id to it.
 
@@ -355,7 +357,21 @@ import Views from "@/components/Views.astro";
 
 ## Prevent Fake Views
 
-Right now every refresh counts as a new view. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
+Right now every refresh counts as a new view. The simplest mitigation to prevent fake views and that requires no extra dependencies: add a `sessionStorage` check in the Astro component so the same browser tab only counts once per session.
+
+Add this at the top of the load function:
+
+```js file=views.astro
+if (sessionStorage.getItem(slug)) return;
+```
+
+Add this after a successful fetch:
+
+```js file=views.astro
+sessionStorage.setItem(slug, "1");
+```
+
+This won't stop bots or multi-tab visits, but it eliminates accidental self-inflation during development. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
 
 - IP cooldown
 - Fingerprint deduplication
@@ -364,48 +380,42 @@ Right now every refresh counts as a new view. That may be perfectly fine for a p
 
 Use the level of accuracy your project actually needs.
 
-## Why This Approach Is Better Than Third-Party Analytics
+## Self-Hosted Page Views vs Analytics Platforms
 
-If you only need page view counts, tools like Google Analytics or Plausible 
-are simply overkill. They load external scripts, add latency, and hand your 
+If you only need page view counts, tools like [Google Analytics](https://developers.google.com/analytics) or [Plausible](https://plausible.io/)
+are simply overkill. They load external scripts, add latency, and hand your
 visitor data to a third party.
 
 This setup keeps everything under your control:
 
-- **Full data ownership** — views live in your own Supabase Postgres, 
+- **Full data ownership** — views live in your own Supabase Postgres,
   not someone else's dashboard
-- **Minimal frontend overhead** — one small fetch call fired on idle, 
+- **Minimal frontend overhead** — one small fetch call fired on idle,
   nothing injected at page load
-- **Simple architecture** — one table, one Edge Function, one component. 
+- **Simple architecture** — one table, one Edge Function, one component.
   Easy to debug, easy to replace
-- **No external dependency** — if Supabase goes down, your site still loads. 
+- **No external dependency** — if Supabase goes down, your site still loads.
   The counter just shows `…`
 
 ## FAQ
 
 <details><summary>Does this work with Astro static output mode?</summary>
-Yes. The view counter uses a client-side fetch call, so it works with 
+<strong>Yes</strong>. The view counter uses a client-side fetch call, so it works with 
 fully static Astro output. No server-side rendering required.
 </details>
 
 <details><summary>Will this count my own visits during development?</summary>
-Yes, by default. To exclude yourself, either add an IP-based cooldown 
+<strong>Yes</strong>, by default. To exclude yourself, either add an IP-based cooldown 
 in the Edge Function or simply ignore the count until you deploy.
 </details>
 
-<details><summary>Can I use this with a database other than Supabase?</summary>
-Yes — any database with an HTTP-accessible endpoint works. You'd replace 
-the Edge Function with your own API route and adjust the UPSERT query for 
-your SQL dialect.
-</details>
-
 <details><summary>Is this a replacement for analytics platforms?</summary>
-No. This only tracks raw page views per slug. It has no referrer data, 
+<strong>No</strong>. This only tracks raw page views per slug. It has no referrer data, 
 session tracking, bounce rates, or geography.
 </details>
 
 ## Conclusion
 
-In the end, we built a simple and reliable **Astro page view counter with Supabase**.
+You now own your page view data — it lives in your **Postgres** table, increments atomically, and costs nothing beyond your **Supabase** plan. No third-party scripts. No data leaving your stack.
 
-For most blogs, this is enough to track **Astro blog views** without unnecessary complexity or heavy analytics platforms.
+For a blog that just wants to know what people are reading, that's the whole game.

@@ -46,6 +46,8 @@ export default defineConfig({
         short_name: "denis-iakimenko",
         start_url: "/",
         display: "standalone",
+        background_color: "#transparent",
+        theme_color: "transparent",
         lang: "en",
         scope: "/",
         icons: [
