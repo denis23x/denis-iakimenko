@@ -31,7 +31,7 @@ At first, it looked like there should be many ready-made solutions. There were. 
 
 So I built my own version.
 
-In this article, I’ll show a complete **Astro page view counter** powered by **Supabase**, with real database storage, Edge Functions, and a tiny frontend component.
+In this article, I’ll show a complete **Astro page view counter** powered by Supabase, with real database storage, Edge Functions, and a tiny frontend component.
 
 ## What You Will Build
 
@@ -53,15 +53,15 @@ Here are the most relevant implementations I found — and why none of them full
 
 [https://crockettford.dev/blog/astro-blog-views-counter](https://crockettford.dev/blog/astro-blog-views-counter)
 
-A fairly simple implementation. Good overall, but highly specific. Best suited for people already using **Coolify** and **Docker**.
+A fairly simple implementation. Good overall, but highly specific. Best suited for people already using [Coolify](https://coolify.io/) and [Docker](https://www.docker.com/).
 
-It also introduces a less native database workflow (**schema**, **connection**, **select**, **increment**), which may be unnecessary complexity for a blog owner.
+It also introduces a less native database workflow (schema, connection, select, increment), which may be unnecessary complexity for a blog owner.
 
 [https://mvlanga.com/blog/how-to-build-a-page-view-counter-with-astro-db-actions-and-server-side-islands/](https://mvlanga.com/blog/how-to-build-a-page-view-counter-with-astro-db-actions-and-server-side-islands/)
 
-There's a fair amount of unnecessary code here (in my opinion). A display component and two more for of updating views (**Vanilla** vs. **React**). How is one better than the other, and which should I ultimately use?
+There's a fair amount of unnecessary code here (in my opinion). A display component and two more for of updating views (Vanilla vs. React). How is one better than the other, and which should I ultimately use?
 
-Also, the author didn't explain the data storage layer. Where does **Astro DB** connect to, and where will the view data be stored?
+Also, the author didn't explain the data storage layer. Where does Astro DB connect to, and where will the view data be stored?
 
 [https://elazizi.com/posts/add-views-counter-to-your-astro-blog-posts/](https://elazizi.com/posts/add-views-counter-to-your-astro-blog-posts/)
 
@@ -85,7 +85,7 @@ None of these options fully matched what I wanted.
 
 The closest was the implementation from **mvlanga**, but it does not fully cover real database setup and production usage.
 
-So I decided to build my own version: simple, practical, and independent **Astro page views** powered by **Supabase**.
+So I decided to build my own version: simple, practical, and independent **Astro page views** powered by Supabase.
 
 ## The Plan
 
@@ -435,6 +435,6 @@ session tracking, bounce rates, or geography.
 
 ## Conclusion
 
-You now have a complete **self-hosted analytics system for Astro** — it lives in your **Postgres** table, increments atomically, and costs nothing beyond your **Supabase** plan. No third-party scripts. No data leaving your stack.
+You now have a complete **self-hosted analytics system for Astro** — it lives in your Postgres table, increments atomically, and costs nothing beyond your Supabase plan. No third-party scripts. No data leaving your stack.
 
 For a blog that just wants to know what people are reading, that's the whole game.

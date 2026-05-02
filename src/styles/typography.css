@@ -94,7 +94,17 @@
     }
 
     details {
-      @apply mb-4 block cursor-pointer text-foreground select-none [&_p]:hidden [&_ul]:my-0!;
+      @apply mb-4 block cursor-pointer text-foreground select-none;
+
+      &.tags {
+        p {
+          @apply m-0 inline-flex flex-wrap gap-2;
+
+          img {
+            @apply m-0;
+          }
+        }
+      }
     }
 
     summary {

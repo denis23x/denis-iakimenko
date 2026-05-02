@@ -3,7 +3,7 @@ export const SITE = {
   author: "Denis Iakimenko",
   profile: "https://github.com/denis23x",
   desc: "Senior Software Engineer | Interactive & Backend Systems",
-  title: "Denis Iakimenko",
+  title: "Tech Notes",
   ogImage: null,
   lightAndDarkMode: true,
   postPerIndex: 4,

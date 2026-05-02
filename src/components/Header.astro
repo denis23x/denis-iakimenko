@@ -40,15 +40,24 @@ const isActive = (path: string) => {
       "py-4 sm:py-6",
       "border-b border-border",
       "relative w-full bg-background",
-      "flex items-baseline justify-between sm:items-center",
+      "flex items-center justify-between",
     ]}
   >
-    <a
-      href="/"
-      class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
-    >
-      {SITE.title}
-    </a>
+    <div class="flex items-center gap-2">
+      <img
+        src="/favicon.svg"
+        alt="Tech Notes Logo"
+        width="32"
+        height="32"
+        class="size-6 sm:size-8"
+      />
+      <a
+        href="/"
+        class="py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:my-auto sm:text-2xl sm:leading-none"
+      >
+        {SITE.title}
+      </a>
+    </div>
     <nav
       id="nav-menu"
       class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"

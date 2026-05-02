@@ -14,6 +14,8 @@ type RehypeElementNode = {
 export default function rehypeLinkPolicy() {
   const trusted = [
     "supabase.com",
+    "docker.com",
+    "coolify.io",
     "postman.com",
     "apidog.com",
     "google.com",
