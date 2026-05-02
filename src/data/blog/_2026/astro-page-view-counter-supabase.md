@@ -1,6 +1,6 @@
 ---
-title: How to Build an Astro Page View Counter with Supabase Edge Functions
-description: Build a self-hosted page view counter for your Astro blog using Supabase Postgres and Edge Functions. Full data ownership, no Google Analytics, no external scripts.
+title: How to Track Page Views in Astro Without Google Analytics (Supabase Guide)
+description: Learn how to track page views in Astro without Google Analytics. Build a self-hosted analytics system using Supabase Edge Functions and Postgres.
 pubDatetime: 2026-04-26T10:00:00Z
 modDatetime: 2026-05-01T21:00:00Z
 author: Denis Iakimenko
@@ -14,6 +14,8 @@ tags:
   - page-views
   - edge-functions
   - postgres
+  - serverless
+  - privacy
   - astro-blog
 ---
 
@@ -21,8 +23,9 @@ tags:
 
 ## Introduction
 
-After setting up **Astro 6**, one question immediately came to mind:
-How do you add a proper **page view counter** to an Astro blog without installing a heavy analytics platform?
+After setting up **Astro 6**, one question immediately came to mind: How do you **track page views in Astro without Google Analytics** or any third-party scripts?
+
+This guide shows how to build a **privacy-friendly analytics solution for Astro**, using Supabase as a backend. You will be able to **track page views**, store them in Postgres, and avoid external analytics platforms completely.
 
 At first, it looked like there should be many ready-made solutions. There were. But after reviewing them, most were either too complex, too dependent on third-party services, or simply not something I would trust long-term.
 
@@ -30,9 +33,21 @@ So I built my own version.
 
 In this article, I’ll show a complete **Astro page view counter** powered by **Supabase**, with real database storage, Edge Functions, and a tiny frontend component.
 
+## What You Will Build
+
+A minimal **Astro analytics system** that:
+
+- tracks page views per page
+- works with static Astro sites
+- uses Supabase Edge Functions as a serverless backend
+- stores data in Postgres
+- avoids Google Analytics and third-party scripts
+
 ## Existing Astro Views Counter Solutions
 
 Naturally, the first thing I did was search for existing solutions. If someone already solved this cleanly, why reinvent it?
+
+Most existing guides focus on **basic page view counters**, but few explain how to build a **production-ready analytics backend** for Astro.
 
 Here are the most relevant implementations I found — and why none of them fully worked for me.
 
@@ -76,7 +91,7 @@ So I decided to build my own version: simple, practical, and independent **Astro
 
 We'll use **Supabase Postgres** for storage, an **Edge Function** as the backend layer, and a tiny **Astro** component on the frontend. The key design decision: all mutation logic stays in the **Edge Function**, not in the browser. This keeps the public surface area minimal — the component only calls one endpoint and renders one number.
 
-```mermaid
+```mermaid caption=E2E workflow
 sequenceDiagram
     participant V as Visitor
     participant A as Astro Page
@@ -94,13 +109,15 @@ sequenceDiagram
     A-->>V: Show page with views
 ```
 
+This approach effectively creates a **serverless analytics pipeline** for tracking page views in Astro.
+
 ## Implementation
 
 If you don't have an account with [Supabase](https://supabase.com/) yet, I'd recommend creating one, confirming your email, and creating your first project. Leave all the settings at default, we don't need that right now. After creating the project, wait a few minutes for initialization.
 
 ### Create Database
 
-This part takes only a few minutes and gives you permanent storage for all page views.
+This part takes only a few minutes and gives you permanent storage for all page views. The schema is optimized for a simple **page view tracking system**, where each page is identified by its slug.
 
 Open `SQL Editor` and paste the next script:
 
@@ -145,6 +162,8 @@ Now comes the useful part. Supabase [Edge Functions](https://supabase.com/docs/g
 2. creates the row if missing
 3. increments views atomically
 4. returns the latest count
+
+Next Edge Function acts as a **page view tracking API**. It replaces traditional analytics collectors like Google Analytics by handling view counting directly in your backend.
 
 Open: `Edge Functions` then find the buttons `Deploy a new function → Via Editor` and paste the next code:
 
@@ -260,7 +279,7 @@ If you'd like, you can play around with this request using tools like [Postman](
 
 ## Astro Component
 
-Now we connect everything to the frontend. This component sends a request after page load and updates the counter without blocking rendering.
+This component is responsible for sending a request from the client and updates the counter without blocking rendering.
 
 Create: `Views.astro`
 
@@ -371,7 +390,7 @@ Add this after a successful fetch:
 sessionStorage.setItem(slug, "1");
 ```
 
-This won't stop bots or multi-tab visits, but it eliminates accidental self-inflation during development. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
+This is a basic **anti-spam mechanism** for your tracking system. It won't stop bots or multi-tab visits, but it eliminates accidental self-inflation during development. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
 
 - IP cooldown
 - Fingerprint deduplication
@@ -382,11 +401,11 @@ Use the level of accuracy your project actually needs.
 
 ## Self-Hosted Page Views vs Analytics Platforms
 
-If you only need page view counts, tools like [Google Analytics](https://developers.google.com/analytics) or [Plausible](https://plausible.io/)
+If you are looking for a **Google Analytics alternative for Astro**, and only need to track page views, tools like [Google Analytics](https://developers.google.com/analytics) or [Plausible](https://plausible.io/)
 are simply overkill. They load external scripts, add latency, and hand your
 visitor data to a third party.
 
-This setup keeps everything under your control:
+This approach is a form of **privacy-first analytics**, where no user data is shared with third parties and keeps everything under your control:
 
 - **Full data ownership** — views live in your own Supabase Postgres,
   not someone else's dashboard
@@ -416,6 +435,6 @@ session tracking, bounce rates, or geography.
 
 ## Conclusion
 
-You now own your page view data — it lives in your **Postgres** table, increments atomically, and costs nothing beyond your **Supabase** plan. No third-party scripts. No data leaving your stack.
+You now have a complete **self-hosted analytics system for Astro** — it lives in your **Postgres** table, increments atomically, and costs nothing beyond your **Supabase** plan. No third-party scripts. No data leaving your stack.
 
 For a blog that just wants to know what people are reading, that's the whole game.

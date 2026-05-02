@@ -29,7 +29,7 @@
     }
 
     a {
-      @apply wrap-break-word text-accent decoration-dashed underline-offset-4 focus-visible:no-underline;
+      @apply wrap-break-word text-foreground decoration-dashed underline-offset-4 hover:text-accent focus-visible:no-underline;
     }
 
     ul {
@@ -58,7 +58,7 @@
 
     figure {
       svg {
-        @apply h-auto;
+        @apply h-auto w-full;
       }
     }
 

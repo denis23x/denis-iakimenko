@@ -6,6 +6,7 @@ type Tree = Parameters<typeof visit>[0];
 type CodeNode = {
   type: "code";
   lang?: string | null;
+  meta?: string | null;
   value: string;
 };
 
@@ -30,6 +31,20 @@ function removeRemoteFontImports(svg: string) {
     );
 }
 
+function getMermaidCaption(meta?: string | null) {
+  if (!meta) return "";
+
+  const match = meta.match(/(?:^|\s)caption=(?:"([^"]*)"|'([^']*)'|(.+))/);
+  const caption = (match?.[1] ?? match?.[2] ?? match?.[3] ?? "").trim();
+
+  return caption
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export default function remarkBeautifulMermaid() {
   return (tree: Tree) => {
     visit(
@@ -45,19 +60,24 @@ export default function remarkBeautifulMermaid() {
             renderMermaidSVG(node.value, {
               bg: "var(--background)",
               fg: "var(--foreground)",
-              accent: "var(--accent)",
-              muted: "var(--muted)",
+              // accent: "var(--accent)",
+              muted: "var(--x)",
               // line: '#3d59a1',
               // surface: '#292e42',
-              border: "var(--border)",
+              // border: "var(--border)",
               padding: 16,
               transparent: true,
             })
           );
 
+          const caption = getMermaidCaption(node.meta);
+          const figcaption = caption
+            ? `<figcaption class="text-foreground text-sm italic p-1">${caption}</figcaption>`
+            : "";
+
           parent.children[index] = {
             type: "html",
-            value: `<figure class="flex border rounded-sm not-prose overflow-x-auto">${svg}</figure>`,
+            value: `<figure class="not-prose [&_svg]:border [&_svg]:rounded-md">${svg}${figcaption}</figure>`,
           } satisfies HtmlNode;
         } catch {
           // Keep original mermaid code block when render fails.
