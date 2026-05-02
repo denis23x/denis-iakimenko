@@ -1,5 +1,5 @@
 ---
-title: How to Track Page Views in Astro Without Google Analytics (Supabase Guide)
+title: Astro Page View Tracking Without Google Analytics — Supabase
 description: Learn how to track page views in Astro without Google Analytics. Build a self-hosted analytics system using Supabase Edge Functions and Postgres.
 pubDatetime: 2026-04-26T10:00:00Z
 modDatetime: 2026-05-01T21:00:00Z

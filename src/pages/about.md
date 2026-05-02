@@ -1,11 +1,11 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: "About"
+title: About
 ---
 
 ## BIO
 
-**Software Developer**: Fullstack · 8+ years
+**Software Developer**: Fullstack · Since 2016
 
 I build products end-to-end — from database schema to Core Web Vitals — and I've led teams through the full cycle: requirements, architecture, delivery, and monitoring. TypeScript, Next.js, NestJS, and making things actually ship.
 
