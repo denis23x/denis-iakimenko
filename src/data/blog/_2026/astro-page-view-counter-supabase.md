@@ -41,7 +41,7 @@ A minimal Astro analytics system that:
 - works with static Astro sites
 - uses Supabase Edge Functions as a serverless backend
 - stores data in Postgres
-- avoids Google Analytics and third-party scripts
+- avoids GA4 and third-party tracking scripts
 
 ## Existing Astro Views Counter Solutions
 
@@ -390,6 +390,12 @@ Add this after a successful fetch:
 sessionStorage.setItem(slug, "1");
 ```
 
+Prevent cheating during development, add this at the top of the load function:
+
+```js file=views.astro
+if (!import.meta.env.PROD) return;
+```
+
 This is a basic anti-spam mechanism for your tracking system. It won't stop bots or multi-tab visits, but it eliminates accidental self-inflation during development. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:
 
 - IP cooldown
@@ -401,7 +407,7 @@ Use the level of accuracy your project actually needs.
 
 ## Self-Hosted Page Views vs Analytics Platforms
 
-If you are looking for a Google Analytics alternative for Astro, and only need to track page views, tools like [Google Analytics](https://developers.google.com/analytics) or [Plausible](https://plausible.io/)
+If you are looking for a GA4 alternative for Astro, and only need to track page views, tools like [Google Analytics](https://developers.google.com/analytics) or [Plausible](https://plausible.io/)
 are simply overkill. They load external scripts, add latency, and hand your
 visitor data to a third party.
 
@@ -419,17 +425,17 @@ This approach is a form of privacy-first analytics, where no user data is shared
 ## FAQ
 
 <details><summary>Does this work with Astro static output mode?</summary>
-<strong>Yes</strong>. The view counter uses a client-side fetch call, so it works with 
+Yes. The view counter uses a client-side fetch call, so it works with 
 fully static Astro output. No server-side rendering required.
 </details>
 
 <details><summary>Will this count my own visits during development?</summary>
-<strong>Yes</strong>, by default. To exclude yourself, either add an IP-based cooldown 
+Yes, by default. To exclude yourself, either add an IP-based cooldown 
 in the Edge Function or simply ignore the count until you deploy.
 </details>
 
 <details><summary>Is this a replacement for analytics platforms?</summary>
-<strong>No</strong>. This only tracks raw page views per slug. It has no referrer data, 
+No. This only tracks raw page views per slug. It has no referrer data, 
 session tracking, bounce rates, or geography.
 </details>
 
