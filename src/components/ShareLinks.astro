@@ -49,7 +49,7 @@ const URL = Astro.url;
           try {
             await navigator.share({
               title: document.title,
-              url,
+              url: url.replace(/\/+$/, ""),
             });
           } catch {
             // User canceled share action or platform rejected it.

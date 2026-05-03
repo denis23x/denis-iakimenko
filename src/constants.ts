@@ -20,19 +20,19 @@ export const SOCIALS: Social[] = [
   {
     name: "Linktree",
     href: "https://linktr.ee/denis23x",
-    linkTitle: `${SITE.title} on Linktree`,
+    linkTitle: `${SITE.author} on Linktree`,
     icon: IconLinktree,
   },
   {
     name: "GitHub",
-    href: "https://github.com/denis23x/denis-iakimenko",
-    linkTitle: `${SITE.title} on GitHub`,
+    href: "https://github.com/denis23x",
+    linkTitle: `${SITE.author} on GitHub`,
     icon: IconGitHub,
   },
   {
     name: "LinkedIn",
     href: "https://www.linkedin.com/in/denis-iakimenko/",
-    linkTitle: `${SITE.title} on LinkedIn`,
+    linkTitle: `${SITE.author} on LinkedIn`,
     icon: IconLinkedin,
   },
 ] as const;
