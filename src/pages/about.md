@@ -5,7 +5,7 @@ title: Denis Iakimenko — Fullstack Developer & AI Engineer
 
 ## BIO
 
-I build products end-to-end — from database schema to Core Web Vitals — and I've led teams through the full cycle: requirements, architecture, delivery, and monitoring. TypeScript, Next.js, NestJS, DevOps pipelines, AI integrations, and making things actually ship.
+I build products end-to-end — from database schema to Core Web Vitals — and I've led teams through the full cycle: requirements, architecture, delivery, and monitoring. TypeScript, Next.js, NestJS, DevOps pipelines, AI integrations, and making things actually ship since 2016.
 
 > I built a URL shortener in a weekend and a 2D platformer over a month — not because I had to, but because I needed to know if I could.
 
@@ -209,6 +209,6 @@ A few things I've built outside of work
 
 ## Let's talk
 
-**Fullstack Developer**: Denis Iakimenko · Since 2016
+**Denis Iakimenko**: Fullstack Developer & AI Engineer
 
 Available for freelance, contract, or full-time (UTC+7). Stack includes Next.js, NestJS, Supabase and more — reach out via [linktr.ee/denis23x](https://linktr.ee/denis23x)
