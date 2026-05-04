@@ -1,17 +1,25 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: About
+title: Denis Iakimenko — Fullstack Developer & AI Engineer
 ---
 
 ## BIO
 
-**Software Developer**: Fullstack · Since 2016
+**Fullstack Developer**: Since 2016
 
-I build products end-to-end — from database schema to Core Web Vitals — and I've led teams through the full cycle: requirements, architecture, delivery, and monitoring. TypeScript, Next.js, NestJS, and making things actually ship.
+I build products end-to-end — from database schema to Core Web Vitals — and I've led teams through the full cycle: requirements, architecture, delivery, and monitoring. TypeScript, Next.js, NestJS, DevOps pipelines, AI integrations, and making things actually ship.
 
 > I built a URL shortener in a weekend and a 2D platformer over a month — not because I had to, but because I needed to know if I could.
 
 **What you get**: a developer who ships without hand-holding. APIs designed for scale, frontends tuned for ~1s load, CI/CD that doesn't break on Fridays, and AI-assisted workflows that cut development time — not just hype about AI.
+
+## How I work
+
+My default is ownership. I don't wait to be pointed at a task — I find the gap, propose a fix, and ship it. That means reading the product requirements before touching the code, asking whether the feature is actually needed, and writing the kind of PR description that saves the next developer 30 minutes of archaeology.
+
+On the technical side, I care about the stuff that's invisible when it works: clean API contracts, query performance that doesn't surprise you at scale, CI pipelines that give you confidence instead of anxiety. I've worked in teams where "it works on my machine" was acceptable. I don't run those teams.
+
+If you're evaluating me for a project: I'm best suited for products that need to move fast without accumulating debt — early-stage builds, legacy rewrites, or teams that outgrew their current architecture.
 
 ## Pet Projects
 
