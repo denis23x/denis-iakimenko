@@ -33,7 +33,10 @@ const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 
     {
       featuredPosts.length > 0 && (
-        <section id="featured" class:list={["pt-12 pb-6"]}>
+        <section
+          id="featured"
+          class:list={["pt-12 pb-6", "border-t border-border"]}
+        >
           <h2 class="text-2xl font-semibold tracking-wide">Core Articles</h2>
           <ul>
             {featuredPosts.map(data => (

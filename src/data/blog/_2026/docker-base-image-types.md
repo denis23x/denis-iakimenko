@@ -1,12 +1,12 @@
 ---
-title: Docker Base Images in 2026 — bullseye, bookworm, alpine, distroless explained
+title: Docker Base Images — bullseye, bookworm, alpine, distroless explained
 description: A practical guide to choosing Docker base images. Compare bookworm, bullseye, slim, alpine, distroless, and Chainguard Wolfi for production Node.js and Python containers.
 pubDatetime: 2026-05-03T10:00:00Z
-modDatetime: 2026-05-03T10:00:00Z
+modDatetime: 2026-05-05T10:00:00Z
 author: Denis Iakimenko
-slug: docker-base-image-types-2026
+slug: docker-base-image-types
 featured: true
-draft: true
+draft: false
 tags:
   - docker
   - devops
@@ -62,7 +62,7 @@ Sizes are rough — they shift with every rebuild and depend on the language run
 
 ## Debian: bookworm and bullseye
 
-Both are full Debian images. `bookworm` is Debian 12, current stable. `bullseye` is Debian 11, old stable, with security updates running out around June 2026.
+Both are full Debian images. `bookworm` is Debian 12, current stable. `bullseye` is Debian 11, old stable, with security updates running out in the end on August 31, 2026.
 
 For anything new, pick `bookworm`. Fresh packages, longer security window, no reason not to.
 
@@ -71,7 +71,7 @@ For anything new, pick `bookworm`. Fresh packages, longer security window, no re
 The full images ship with compilers, curl, git — things your runtime doesn't use. That's the problem `slim` solves.
 
 :::note
-`bullseye` security updates end in June 2026. Running it in production after that means you're patching manually or not at all.
+`bullseye` security updates end in June August 31, 2026. Running it in production after that means you're patching manually or not at all.
 :::
 
 ## slim — The Boring Default That Works
@@ -230,7 +230,7 @@ With a compliance requirement (SOC 2, PCI DSS, FedRAMP), probably yes — it's e
 </details>
 
 <details><summary>Should I stay on bullseye in 2026?</summary>
-Only if migration is genuinely blocked. Security updates end around June 2026. After that, you're running unpatched and the window keeps getting worse.
+Only if migration is genuinely blocked. Security updates end on August 31, 2026. After that, you're running unpatched and the window keeps getting worse.
 </details>
 
 ## Conclusion
