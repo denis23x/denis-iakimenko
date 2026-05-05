@@ -5,8 +5,8 @@ pubDatetime: 2026-05-03T10:00:00Z
 modDatetime: 2026-05-03T10:00:00Z
 author: Denis Iakimenko
 slug: google-search-operators
-featured: true
-draft: true
+featured: false
+draft: false
 tags:
   - google
   - search

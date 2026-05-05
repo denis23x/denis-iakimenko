@@ -9,6 +9,7 @@ import remarkDirective from "remark-directive";
 import remarkCalloutDirectives from "@microflash/remark-callout-directives";
 import remarkBeautifulMermaid from "./src/utils/remark/remarkBeautifulMermaid";
 import rehypeLinkPolicy from "./src/utils/rehype/rehypeLinkPolicy";
+import rehypeWrapTables from "./src/utils/rehype/rehypeWrapTables";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -129,7 +130,7 @@ export default defineConfig({
       remarkToc,
       [remarkCollapse, { test: "Table of contents" }],
     ],
-    rehypePlugins: [rehypeLinkPolicy],
+    rehypePlugins: [rehypeLinkPolicy, rehypeWrapTables],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "github-dark-default" },

@@ -67,6 +67,8 @@
     }
 
     table {
+      @apply m-0;
+
       th,
       td {
         @apply border border-border p-2;
