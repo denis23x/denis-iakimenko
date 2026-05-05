@@ -18,37 +18,40 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
 <Layout
-  title="Denis Iakimenko — Fullstack TypeScript Developer & Engineering Blog"
+  title="Denis Iakimenko — Fullstack TypeScript Developer & Tech Notes"
   description="Engineering notes from a fullstack developer — TypeScript, Next.js, NestJS, backend architecture, and practical lessons since 2016 of shipping software"
 >
   <Header />
   <main id="main-content" data-layout="index" class="app-layout">
     <section id="hero" class:list={["pt-8 pb-6", "border-b border-border"]}>
-      <h1 class="my-4 inline-block text-3xl font-bold sm:my-8 sm:text-4xl">
-        Denis Iakimenko
-      </h1>
-      <a
-        target="_blank"
-        href="/rss.xml"
-        class="inline-block"
-        aria-label="rss feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={24}
-          height={24}
-          class="scale-125 stroke-accent stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
+      <div class="my-4 flex flex-col gap-4 sm:my-8">
+        <a
+          target="_blank"
+          href="/rss.xml"
+          class="inline-block"
+          aria-label="rss feed"
+          title="RSS Feed"
+        >
+          <IconRss
+            width={24}
+            height={24}
+            class="scale-125 stroke-accent stroke-3 rtl:-rotate-90"
+          />
+          <span class="sr-only">RSS Feed</span>
+        </a>
+        <h1 class="inline-block text-3xl font-bold sm:text-4xl">
+          Denis Iakimenko — Fullstack TypeScript Developer
+        </h1>
+      </div>
 
       <p>
-        Since 2016 in production TypeScript — Next.js, NestJS, Supabase,
-        DevOps, AI integrations. Implementation notes, architecture decisions,
-        and the mistakes worth documenting.
+        I have been building fullstack TypeScript applications in production
+        since 2016 — across Next.js, NestJS, Supabase, DevOps, and AI
+        integrations. This engineering blog documents the implementation notes,
+        architecture decisions, and the mistakes that are worth writing down
       </p>
 
-      <p class="mt-2">
+      <p class="mt-2 mb-6">
         Backend and full-stack by day,
         <a
           href="https://denis23x.itch.io/deepwood"
