@@ -393,7 +393,7 @@ sessionStorage.setItem(slug, "1");
 Prevent cheating during development, add this at the top of the load function:
 
 ```js file=views.astro
-if (!import.meta.env.PROD) return;
+if (import.meta.env.DEV) return;
 ```
 
 This is a basic anti-spam mechanism for your tracking system. It won't stop bots or multi-tab visits, but it eliminates accidental self-inflation during development. That may be perfectly fine for a personal blog. But if you want cleaner numbers, add:

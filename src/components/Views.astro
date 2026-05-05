@@ -82,7 +82,7 @@ const { slug } = Astro.props;
     };
 
     const load = async signal => {
-      if (!import.meta.env.PROD) return;
+      if (import.meta.env.DEV) return;
 
       const el = findCounterElement();
       if (!el) return;
