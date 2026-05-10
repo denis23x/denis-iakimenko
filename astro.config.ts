@@ -144,7 +144,7 @@ export default defineConfig({
               scope: ["comment", "punctuation.definition.comment"],
               settings: {
                 foreground:
-                  "color-mix(in srgb, var(--foreground) 55%, transparent)",
+                  "color-mix(in srgb, var(--foreground) 65%, transparent)",
               },
             },
           ],
