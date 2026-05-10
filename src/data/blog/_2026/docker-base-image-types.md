@@ -24,99 +24,123 @@ tags:
 
 ## Introduction
 
-You open a blank `Dockerfile`, type `FROM`, and immediately stall. `bullseye`, `bookworm`, `slim`, `alpine`, `distroless`, Chainguard, Wolfi — none of these names explain what they actually are, and the Docker Hub tag list doesn't help.
+You open a blank `Dockerfile`, type `FROM`, and immediately stall. `bullseye`, `bookworm`, `slim`, `alpine`, `distroless`, `chainguard` (Wolfi) — none of these names explain what they actually are, and the Docker Hub tag list doesn't help.
 
-I've picked the wrong one more than once. A native module that refused to compile on Alpine. A CVE scan returning 300 findings on an image I assumed was clean. A colleague asking why a 40 MB app was shipping inside a 1.2 GB container. The base image is usually somewhere in that conversation.
+I've picked the wrong one more than once. A native module that refused to compile on Alpine. A CVE (Common Vulnerabilities and Exposures) scan returning 300 findings on an image I assumed was clean. A colleague asking why a 40 MB app was shipping inside a 1.2 GB container. The base image is usually somewhere in that conversation.
 
-This is the guide I kept looking for — not a definitive answer (there isn't one), but enough of a picture that you can make a call you can actually explain later.
+This is the guide I kept looking for! It's not a definitive answer (there isn't one), but enough of a picture that you can make a call you can actually explain later.
 
 ## Why the Base Image Actually Matters
 
 Everything your container inherits flows from the base: the C library, the package manager, the pre-installed binaries, and every CVE that comes with all of them.
 
-```mermaid
+```mermaid caption=Typical image schema
 graph TD
     A[Your App Code] --> B[Runtime Layer]
     B --> C[Base Image]
-    C --> D[C Library: glibc or musl]
+    C --> D[glibc/musl]
     C --> E[System packages]
-    C --> F[Attack surface / CVEs]
+    C --> F[CVEs]
 
     style F fill:#ff6b6b,color:#fff
 ```
 
 A bad pick rarely explodes on day one. It surfaces six months in — a package that won't install after a Debian upgrade, 45 minutes in CI trying to figure out why `node-gyp` builds locally but not in the container. The root cause is almost always the base.
 
-## The Landscape
+### C libraries
 
-| Image              | OS           | C library | Approx. size | Debug tools | CVE surface |
-| ------------------ | ------------ | --------- | ------------ | ----------- | ----------- |
-| `bookworm` (full)  | Debian 12    | glibc     | ~120 MB      | Full        | Medium–High |
-| `bookworm-slim`    | Debian 12    | glibc     | ~75 MB       | Minimal     | Lower       |
-| `bullseye-slim`    | Debian 11    | glibc     | ~75 MB       | Minimal     | Lower       |
-| `alpine`           | Alpine Linux | musl      | ~7 MB        | Minimal     | Medium      |
-| `distroless`       | Debian-based | glibc     | ~20–50 MB    | None        | Low         |
-| Chainguard (Wolfi) | Wolfi        | glibc     | ~15–40 MB    | Optional    | Very Low    |
+<details><summary>glibc (GNU C Library)</summary>
 
-Sizes are rough — they shift with every rebuild and depend on the language runtime on top.
+- The default on most Linux distros (Ubuntu, Debian, Fedora, RHEL, etc)
+- Feature-rich, widely compatible, well-tested
+- Larger in size
+</details>
+
+<details><summary>musl</summary>
+
+- A lightweight alternative, used mainly in Alpine Linux
+- Minimal, fast, small footprint
+- Designed for containers and embedded systems
+- Strictly follows POSIX standards (sometimes too strict, which causes compatibility issues with software built for glibc)
+</details>
+
+### The Landscape
+
+| Image                | OS           | C library | Approx. size | Debug tools | CVE surface |
+| -------------------- | ------------ | --------- | ------------ | ----------- | ----------- |
+| `bookworm` (full)    | Debian 12    | glibc     | ~120 MB      | Full        | Medium–High |
+| `bookworm-slim`      | Debian 12    | glibc     | ~75 MB       | Minimal     | Lower       |
+| `bullseye-slim`      | Debian 11    | glibc     | ~75 MB       | Minimal     | Lower       |
+| `alpine`             | Alpine Linux | musl      | ~7 MB        | Minimal     | Medium      |
+| `distroless`         | Debian-based | glibc     | ~20–50 MB    | None        | Low         |
+| `chainguard` (Wolfi) | Wolfi        | glibc     | ~15–40 MB    | Optional    | Very Low    |
+
+:::info
+Sizes are rough, they shift with every rebuild and depend on the language runtime on top.
+:::
 
 ## Debian: bookworm and bullseye
 
-Both are full Debian images. `bookworm` is Debian 12, current stable. `bullseye` is Debian 11, old stable, with security updates running out in the end on August 31, 2026.
+Both are full Debian images. `bookworm` is Debian 12, current stable. `bullseye` is Debian 11, old stable, with [security updates running out in the end on August 31, 2026](https://www.debian.org/releases/bullseye/)
 
-For anything new, pick `bookworm`. Fresh packages, longer security window, no reason not to.
+> For anything new, pick `bookworm`. Fresh packages, longer security window, no reason not to.
 
 `bullseye` only makes sense if you have a service locked to specific Debian 11 package versions and migrating it right now creates more risk than leaving it alone. That's a valid call for an existing service. It's not a starting position.
 
-The full images ship with compilers, curl, git — things your runtime doesn't use. That's the problem `slim` solves.
+The full images ship with compilers, curl, git, and other things your runtime doesn't use. That's the problem `slim` solves.
 
-:::note
+:::warn
 `bullseye` security updates end in June August 31, 2026. Running it in production after that means you're patching manually or not at all.
 :::
 
 ## slim — The Boring Default That Works
 
-`node:22-bookworm-slim`, `python:3.13-bookworm-slim` — same Debian foundation, most non-essential packages stripped out. Same glibc. Same apt. Smaller attack surface.
+`node:slim` and `python:slim` same Debian foundation, most non-essential packages stripped out. Same glibc, apt and smaller attack surface.
 
-This is my default. It handles the vast majority of real dependency trees without drama, and fewer packages means fewer findings when a scanner runs.
+> This is my default. It handles the vast majority of real dependency trees without drama, and fewer packages means fewer findings when a scanner runs.
 
-What's missing: diagnostic tools. No `curl`, no `strace` by default. During an incident, if you want to poke inside the container, you'll need to install them on the fly or accept they're not there. For most production workloads, that trade is worth it.
+### What's missing
 
-What occasionally trips people up: a `RUN` step that calls a utility `slim` removed. The fix is usually one `apt-get install` line. Annoying once, not a structural problem.
+Diagnostic tools. There is no `curl`, no `strace` by default. During an incident, if you want to poke inside the container, you'll need to install them on the fly or accept they're not there. For most production workloads, that trade is worth it.
 
 ## alpine — Small, With Conditions
 
 Alpine gets picked because the numbers look good. A Node.js Alpine image sits around 40–50 MB. That's the whole pitch.
 
-The actual catch is musl libc. Alpine doesn't ship glibc — it uses musl, a different C standard library. For a pure JavaScript service with no native extensions, this usually doesn't surface. Add anything that compiles C during `npm install`, and the trouble starts.
+The actual catch is `musl` libc. Alpine doesn't ship glibc it uses musl, a different C standard library. For a pure JavaScript service with no native extensions, this usually doesn't surface. Add anything that compiles C during `npm install` ([sharp](https://www.npmjs.com/package/sharp) or [prisma](https://www.npmjs.com/package/prisma) as example), and the trouble starts.
 
 ```mermaid
 graph TD
-    A[npm i native-module] -->|glibc system| B[Compiles fine]
-    A -->|musl/Alpine| C[Fails or misbehaves]
-    C --> D[Debug session]
+    A[npm i (native)] -->|glibc| B[Compiles fine]
+    A -->|musl| C[Fails or misbehaves]
+    C --> D[Debug]
     D --> E[It's musl]
-    D --> F[Switch to slim anyway]
+    D --> F[Switch to slim]
 ```
 
-Python is where this gets painful. Not all packages publish musl-compatible wheels, so pip falls back to compiling from source. That often fails. The error messages point everywhere except the actual problem.
+They saying Python is where this gets painful. Not all packages publish musl-compatible wheels, so pip falls back to compiling from source. That often fails. The error messages point everywhere except the actual problem.
 
-Go binaries compiled statically? Alpine is fine. A Python data pipeline or a Node app with database drivers? Test the full dependency tree on musl before you commit.
-
-:::warn
+:::info
 Alpine's size is real. The compatibility surface is narrower than most people expect. Don't pick it because the number looks good.
 :::
 
 ## distroless — No Shell, No Escape Hatch
 
-Google's distroless images strip out everything except the language runtime and its dependencies. No shell. No package manager. No coreutils.
+Google's distroless images strip out everything except the language runtime and its dependencies.
+
+- No shell.
+- No package manager.
+- No coreutils.
 
 Fewer packages means fewer CVEs. No shell means a compromised container is much harder to use as a foothold — an attacker with code execution inside a distroless container doesn't have a lot of options.
 
-The cost is operational. You can't `exec` into a running container and look around. If something behaves strangely in production, your only window is your observability stack — logs, metrics, traces. If those are solid, distroless works well. If they're thin, you'll end up rebuilding the image just to stick a shell in for debugging.
+> The cost is operational. You can't `exec` into a running container and look around.
+
+If something behaves strangely in production, your only window is your observability stack — logs, metrics, traces. If those are solid, distroless works well. If they're thin, you'll end up rebuilding the image just to stick a shell in for debugging.
+
+### Multi-stage with distroless runtime
 
 ```dockerfile file=Dockerfile
-# Multi-stage with distroless runtime
 FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
@@ -131,25 +155,21 @@ COPY --from=builder /app/node_modules ./node_modules
 CMD ["dist/main.js"]
 ```
 
-One thing that surprises people: distroless still uses glibc. Native module compatibility isn't the issue it is with Alpine. The trade-off is purely about how much you trust your observability when something breaks.
+One thing that surprises people: distroless still uses glibc. Native module compatibility isn't the issue it is with Alpine.
 
-## Chainguard / Wolfi — The Security-First Option
+:::warn
+The trade-off is purely about how much you trust your observability when something breaks.
+:::
 
-Chainguard images run on Wolfi — a Linux distribution built specifically for containers, no kernel included, rebuilt nightly from source. Every image ships with an SBOM and Sigstore signature.
+## Chainguard (Wolfi) — The Security-First Option
 
-The CVE numbers are hard to ignore. Standard Debian-based Docker Hub images average around 280 known CVEs. Chainguard images sit at zero or near-zero. The reason is mechanical: upstream security fix lands, Wolfi picks it up, new image is out within hours instead of waiting for a Debian release cycle.
+Wolfi is a lightweight Linux distribution built specifically for containers, no kernel included (use host kernel). Every image ships with an SBOM (Software Bill of Materials) and Sigstore signature.
 
-```mermaid
-graph TD
-    A[Upstream security fix] -->|Standard Debian| B[Waits for release cycle]
-    B --> C[Days or weeks to patch]
-    A -->|Chainguard Wolfi| D[Automated nightly rebuild]
-    D --> E[New image in hours]
-```
+The CVE numbers are hard to ignore. Standard Debian-based Docker Hub images average around 280 known CVEs. Chainguard images sit at zero or near-zero. When upstream security fix lands, Wolfi picks it up, new image is out within hours instead of waiting for a Debian release cycle.
 
-The free tier gives you roughly 50 images tagged `:latest` without an account. Version pinning and the full catalog need a paid plan. The operational workflow is different from what most teams are used to — not harder, just new, and that adjustment takes time.
-
-For a greenfield project with a real compliance requirement, it's worth a proper evaluation. For everyone else — come back to it when a scanner report or an audit makes the case for you.
+:::info
+Greenfield project with compliance requirements? Evaluate it properly. Everyone else wait until a scanner report makes the case for you.
+:::
 
 ## Multi-Stage Builds: What Actually Moves the Needle
 

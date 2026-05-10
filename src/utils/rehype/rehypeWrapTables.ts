@@ -26,7 +26,7 @@ export default function rehypeWrapTables() {
           type: "element",
           tagName: "div",
           properties: {
-            class: "overflow-x-auto",
+            class: "overflow-x-auto my-7",
           },
           children: [node],
         } satisfies RehypeElementNode;

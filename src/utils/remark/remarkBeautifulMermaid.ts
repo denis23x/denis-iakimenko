@@ -77,7 +77,7 @@ export default function remarkBeautifulMermaid() {
 
           parent.children[index] = {
             type: "html",
-            value: `<figure class="not-prose [&_svg]:border [&_svg]:rounded-md">${svg}${figcaption}</figure>`,
+            value: `<figure class="not-prose my-6 [&_svg]:border [&_svg]:rounded-md">${svg}${figcaption}</figure>`,
           } satisfies HtmlNode;
         } catch {
           // Keep original mermaid code block when render fails.

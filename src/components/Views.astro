@@ -6,6 +6,7 @@ type Props = {
 };
 
 const { slug } = Astro.props;
+const isDev = import.meta.env.DEV;
 ---
 
 <span class="inline-flex items-center gap-x-2 opacity-80">
@@ -17,7 +18,7 @@ const { slug } = Astro.props;
   >
 </span>
 
-<script define:vars={{ slug }} is:inline data-astro-rerun>
+<script define:vars={{ isDev, slug }} is:inline data-astro-rerun>
   (() => {
     const cleanupKey = "__viewsCleanup";
     const endpoint =
@@ -82,7 +83,7 @@ const { slug } = Astro.props;
     };
 
     const load = async signal => {
-      if (import.meta.env.DEV) return;
+      if (isDev) return;
 
       const el = findCounterElement();
       if (!el) return;
