@@ -1,6 +1,6 @@
 ---
 title: Docker Base Images — bullseye, bookworm, alpine, distroless explained
-description: A practical guide to choosing Docker base images. Compare bookworm, bullseye, slim, alpine, distroless, and Chainguard Wolfi for production Node.js and Python containers.
+description: A practical guide to choosing Docker images. Compare bookworm, bullseye, slim, alpine, distroless, and Chainguard Wolfi for production containers.
 pubDatetime: 2026-05-03T10:00:00Z
 modDatetime: 2026-05-05T10:00:00Z
 author: Denis Iakimenko
@@ -24,7 +24,7 @@ tags:
 
 ## Introduction
 
-You open a blank `Dockerfile`, type `FROM`, and immediately stall. `bullseye`, `bookworm`, `slim`, `alpine`, `distroless`, `chainguard` (Wolfi) — none of these names explain what they actually are, and the Docker Hub tag list doesn't help.
+Choosing a Docker base image — bullseye, bookworm, slim, alpine, distroless, or Chainguard Wolfi — shouldn't be this confusing. You open a blank `Dockerfile`, type `FROM`, and immediately stall.. none of these names explain what they actually are, and the Docker Hub tag list doesn't help.
 
 I've picked the wrong one more than once. A native module that refused to compile on Alpine. A CVE (Common Vulnerabilities and Exposures) scan returning 300 findings on an image I assumed was clean. A colleague asking why a 40 MB app was shipping inside a 1.2 GB container. The base image is usually somewhere in that conversation.
 
@@ -66,14 +66,14 @@ A bad pick rarely explodes on day one. It surfaces six months in — a package t
 
 ### The Landscape
 
-| Image                | OS           | C library | Approx. size | Debug tools | CVE surface |
-| -------------------- | ------------ | --------- | ------------ | ----------- | ----------- |
-| `bookworm` (full)    | Debian 12    | glibc     | ~120 MB      | Full        | Medium–High |
-| `bookworm-slim`      | Debian 12    | glibc     | ~75 MB       | Minimal     | Lower       |
-| `bullseye-slim`      | Debian 11    | glibc     | ~75 MB       | Minimal     | Lower       |
-| `alpine`             | Alpine Linux | musl      | ~7 MB        | Minimal     | Medium      |
-| `distroless`         | Debian-based | glibc     | ~20–50 MB    | None        | Low         |
-| `chainguard` (Wolfi) | Wolfi        | glibc     | ~15–40 MB    | Optional    | Very Low    |
+| Image              | OS           | C library | Approx. size | Debug tools | CVE surface |
+| ------------------ | ------------ | --------- | ------------ | ----------- | ----------- |
+| `bookworm` (full)  | Debian 12    | glibc     | ~120 MB      | Full        | Medium–High |
+| `bookworm-slim`    | Debian 12    | glibc     | ~75 MB       | Minimal     | Lower       |
+| `bullseye-slim`    | Debian 11    | glibc     | ~75 MB       | Minimal     | Lower       |
+| `alpine`           | Alpine Linux | musl      | ~7 MB        | Minimal     | Medium      |
+| `distroless`       | Debian-based | glibc     | ~20–50 MB    | None        | Low         |
+| `Chainguard Wolfi` | Wolfi        | glibc     | ~15–40 MB    | Optional    | Very Low    |
 
 :::info
 Sizes are rough, they shift with every rebuild and depend on the language runtime on top.
@@ -163,7 +163,7 @@ One thing that surprises people: distroless still uses glibc. Native module comp
 The trade-off is purely about how much you trust your observability when something breaks.
 :::
 
-## Chainguard (Wolfi) — The Security-First Option
+## Chainguard Wolfi — The Security-First Option
 
 Wolfi is a lightweight Linux distribution built specifically for containers, no kernel included (use host kernel). Every image ships with an SBOM (Software Bill of Materials) and Sigstore signature.
 
@@ -226,7 +226,7 @@ flowchart TD
     E -->|Yes| F[alpine]
     E -->|No| C
     C --> G{Security/compliance?}
-    G -->|Yes| H[distroless/chainguard]
+    G -->|Yes| H[distroless/Chainguard]
     G -->|No| I[slim]
 ```
 
