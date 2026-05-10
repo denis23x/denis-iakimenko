@@ -17,6 +17,7 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
+import minLight from "shiki/themes/min-light.mjs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -133,7 +134,22 @@ export default defineConfig({
     rehypePlugins: [rehypeLinkPolicy, rehypeWrapTables],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
-      themes: { light: "min-light", dark: "github-dark-default" },
+      themes: {
+        light: {
+          ...minLight,
+          name: "min-light-custom",
+          tokenColors: [
+            ...(minLight.tokenColors ?? []),
+            {
+              scope: ["comment", "punctuation.definition.comment"],
+              settings: {
+                foreground:
+                  "color-mix(in srgb, var(--foreground) 55%, transparent)",
+              },
+            },
+          ],
+        },
+      },
       defaultColor: false,
       wrap: false,
       transformers: [

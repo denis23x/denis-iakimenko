@@ -109,13 +109,13 @@ Alpine gets picked because the numbers look good. A Node.js Alpine image sits ar
 
 The actual catch is `musl` libc. Alpine doesn't ship glibc it uses musl, a different C standard library. For a pure JavaScript service with no native extensions, this usually doesn't surface. Add anything that compiles C during `npm install` ([sharp](https://www.npmjs.com/package/sharp) or [prisma](https://www.npmjs.com/package/prisma) as example), and the trouble starts.
 
-```mermaid
+```mermaid caption=Workflow when project needs to compile C
 graph TD
     A[npm i (native)] -->|glibc| B[Compiles fine]
-    A -->|musl| C[Fails or misbehaves]
+    A -->|musl| C[Usually fails]
     C --> D[Debug]
     D --> E[It's musl]
-    D --> F[Switch to slim]
+    D --> F[Use slim]
 ```
 
 They saying Python is where this gets painful. Not all packages publish musl-compatible wheels, so pip falls back to compiling from source. That often fails. The error messages point everywhere except the actual problem.
@@ -138,16 +138,18 @@ Fewer packages means fewer CVEs. No shell means a compromised container is much 
 
 If something behaves strangely in production, your only window is your observability stack — logs, metrics, traces. If those are solid, distroless works well. If they're thin, you'll end up rebuilding the image just to stick a shell in for debugging.
 
-### Multi-stage with distroless runtime
+### Dockerfile with distroless runtime
 
 ```dockerfile file=Dockerfile
-FROM node:22-bookworm-slim AS builder
+# Stage 1 — Install dependencies & build
+FROM node:22-slim AS builder
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 
+# Stage 2 — Runtime
 FROM gcr.io/distroless/nodejs22-debian12
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
@@ -173,24 +175,24 @@ Greenfield project with compliance requirements? Evaluate it properly. Everyone 
 
 ## Multi-Stage Builds: What Actually Moves the Needle
 
-Regardless of which image you pick, the build structure matters as much as the base. Multi-stage builds keep build-time dependencies out of the runtime layer — compilers, dev tools, test runners stay in the builder stage and never ship.
+Regardless of which image you pick, the build structure matters as much as the base. Multi-stage builds keep build-time dependencies out of the runtime layer. Compilers, dev tools, test runners stay in the builder stage and never ship.
 
 ```dockerfile file=Dockerfile
-# Stage 1 — install dependencies
-FROM node:22-bookworm-slim AS deps
+# Stage 1 — Install dependencies
+FROM node:22-slim AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile
 
-# Stage 2 — build
-FROM node:22-bookworm-slim AS build
+# Stage 2 — Build
+FROM node:22-slim AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build
 
-# Stage 3 — runtime
-FROM node:22-bookworm-slim AS runtime
+# Stage 3 — Runtime
+FROM node:22-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/dist ./dist
@@ -199,41 +201,42 @@ USER node
 CMD ["node", "dist/main.js"]
 ```
 
-No build toolchain in production. No dev dependencies. Doesn't run as root. These three things cut a large category of scanner findings before a line of application code gets involved.
+No build toolchain in production and no dev dependencies. Doesn't run as root. These three things cut a large category of scanner findings before a line of application code gets involved.
 
 ## Mistakes That Show Up Everywhere
 
-**`FROM node:latest` in production.** Every CI build silently pulls whatever `:latest` is that day. Pin a version — `node:22.11.0-bookworm-slim`. Rebuilds become reproducible. Rollbacks become possible.
-
-**Picking Alpine without testing the full dependency tree.** Run `docker build` with the complete production dep set on a clean machine before committing. If it breaks, you've saved a CI debugging session three weeks from now.
-
-**Single-stage builds shipping dev dependencies.** `npm install` in a single stage pulls everything, including tools you don't need at runtime. Use `npm ci --omit=dev`, or better, split into stages.
-
-**Running as root.** `USER node` is one line. It belongs in every runtime stage. There's no good reason to leave it out.
-
-**Pinning a version and then never updating it.** `node:22.11.0-bookworm-slim` from eight months ago has accumulated every CVE patched since. Automate base image updates, or at least put a calendar reminder to review them.
+- `node:latest` in production. Every CI build silently pulls whatever `:latest` is that day.
+  - Pin a version `node:22.11.0-slim`. Rebuilds become reproducible and rollbacks become possible.
+- **Picking Alpine without testing the full dependency tree.**
+  - Run `docker build` with the complete production dependency set on a clean machine before committing. If it breaks, you've saved a CI debugging session much time from now.
+- **Single-stage builds shipping dev dependencies.** `npm install` in a single stage pulls everything, including tools you don't need at runtime.
+  - Use `npm ci --omit=dev` or better, split into stages.
+- **Running as root.** There's no good reason to leave it out.
+  - `USER node` is one line. It belongs in every runtime stage.
 
 ## Decision Flow
 
 ```mermaid
 flowchart TD
     A[New service] --> B{Native C dependencies?}
-    B -->|Yes| C[bookworm-slim]
-    B -->|Pure JS or Python| D{Hard size constraint?}
+    B -->|Yes| C[slim]
+    B -->|JS/Python| D{Hard size constraint?}
     D -->|No| C
     D -->|Yes| E{Team knows musl well?}
     E -->|Yes| F[alpine]
     E -->|No| C
-    C --> G{Security-critical / compliance?}
-    G -->|Yes, observability is mature| H[distroless or Chainguard]
-    G -->|No| I[bookworm-slim]
+    C --> G{Security/compliance?}
+    G -->|Yes| H[distroless/chainguard]
+    G -->|No| I[slim]
 ```
 
-Most paths end at `bookworm-slim`. That's not a coincidence — it's just a genuinely good default for most situations.
+:::info
+Most paths end at `slim`. That's not a coincidence — it's just a genuinely good default for most situations.
+:::
 
 ## FAQ
 
-<details><summary>Is bookworm-slim safe for production?</summary>
+<details><summary>Is slim safe for production?</summary>
 Yes. Debian 12 stable, actively maintained, security patches come through on a regular cadence. It's what most backend services should be running.
 </details>
 
@@ -246,7 +249,7 @@ When your logging and tracing aren't solid enough to diagnose production problem
 </details>
 
 <details><summary>Is Chainguard worth it for a small team?</summary>
-With a compliance requirement (SOC 2, PCI DSS, FedRAMP), probably yes — it's easier than building the hardening yourself. Without one, the setup overhead is real and there are usually higher-priority things to fix first.
+With a compliance requirement, probably yes — it's easier than building the hardening yourself. Without one, the setup overhead is real and there are usually higher-priority things to fix first.
 </details>
 
 <details><summary>Should I stay on bullseye in 2026?</summary>
@@ -255,7 +258,7 @@ Only if migration is genuinely blocked. Security updates end on August 31, 2026.
 
 ## Conclusion
 
-Most paths through this decision end at `bookworm-slim`. Not because it's clever, but because it works: glibc compatibility, active patches, a size you can live with, and a runtime you can actually debug when something breaks.
+Most paths through this decision end at `slim`. Not because it's clever, but because it works: glibc compatibility, active patches, a size you can live with, and a runtime you can actually debug when something breaks.
 
 Multi-stage builds, pinned versions, non-root user — do all of that regardless of which image you pick. It's table stakes, not optimization.
 

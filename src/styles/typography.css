@@ -156,7 +156,7 @@
         display: inline-block;
         text-align: right;
         color: var(--foreground);
-        opacity: 0.4;
+        opacity: 0.5;
       }
     }
   }
