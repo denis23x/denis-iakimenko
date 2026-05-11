@@ -31,7 +31,14 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: page => SITE.showArchives || !page.endsWith("/archives"),
+      filter: (page: string) => {
+        const p = new URL(page).pathname.replace(/\/+$/, "");
+        const isTags = p === "/tags" || p.startsWith("/tags");
+        const isArchives = p === "/archives" || p.endsWith("/archives");
+        const isSearch = p === "/search" || p.endsWith("/search");
+
+        return !isTags && !isArchives && !isSearch;
+      },
       serialize(item) {
         // remove trailing slash from url
         item.url = item.url.replace(/\/+$/, "");

@@ -13,6 +13,7 @@ type Props = {
   description?: string;
   ogImage?: string;
   canonicalURL?: string;
+  robots?: string;
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
@@ -27,6 +28,7 @@ const {
   canonicalURL = new URL(Astro.url.pathname, Astro.url)
     .toString()
     .replace(/\/+$/, ""),
+  robots = "index, follow",
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
@@ -82,6 +84,7 @@ const structuredData = {
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <meta name="author" content={author} />
+    {robots && <meta name="robots" content={robots} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Open Graph / Facebook -->

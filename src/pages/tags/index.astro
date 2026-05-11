@@ -13,7 +13,7 @@ const posts = await getCollection("blog");
 let tags = getUniqueTags(posts);
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
+<Layout title={`Tags | ${SITE.title}`} robots="noindex, follow">
   <Header />
   <Main pageTitle="Tags" pageDesc="All the tags used in blog.">
     <ul class="flex flex-wrap gap-x-3 gap-y-2">
