@@ -1,6 +1,6 @@
 ---
-title: Docker Base Images — bullseye, bookworm, alpine, distroless explained
-description: A practical guide to choosing Docker images. Compare bookworm, bullseye, slim, alpine, distroless, and Chainguard Wolfi for production containers.
+title: Docker Base Image — bookworm-slim, alpine, distroless, and Chainguard explained
+description: How to choose a Docker base image: compare bookworm-slim, alpine, distroless, and Chainguard. Covers CVE surface, musl vs glibc compatibility, and multi-stage build patterns.
 pubDatetime: 2026-05-03T10:00:00Z
 modDatetime: 2026-05-05T10:00:00Z
 author: Denis Iakimenko
@@ -24,11 +24,11 @@ tags:
 
 ## Introduction
 
-Choosing a Docker base image — bullseye, bookworm, slim, alpine, distroless, or Chainguard Wolfi — shouldn't be this confusing. You open a blank `Dockerfile`, type `FROM`, and immediately stall.. none of these names explain what they actually are, and the Docker Hub tag list doesn't help.
+Choosing a Docker base image — bullseye, bookworm, slim, alpine, distroless, or Chainguard Wolfi — shouldn't be this confusing. You open a blank `Dockerfile`, type `FROM`, and immediately stall — none of these names explain what they actually are, and the Docker Hub tag list doesn't help.
 
 I've picked the wrong one more than once. A native module that refused to compile on Alpine. A CVE (Common Vulnerabilities and Exposures) scan returning 300 findings on an image I assumed was clean. A colleague asking why a 40 MB app was shipping inside a 1.2 GB container. The base image is usually somewhere in that conversation.
 
-This is the guide I kept looking for! It's not a definitive answer (there isn't one), but enough of a picture that you can make a call you can actually explain later.
+This is the guide I kept looking for. It's not a definitive answer (there isn't one), but enough of a picture that you can make a call you can actually explain later.
 
 ## Why the Base Image Actually Matters
 
@@ -87,17 +87,17 @@ Both are full Debian images. `bookworm` is Debian 12, current stable. `bullseye`
 
 `bullseye` only makes sense if you have a service locked to specific Debian 11 package versions and migrating it right now creates more risk than leaving it alone. That's a valid call for an existing service. It's not a starting position.
 
-The full images ship with compilers, curl, git, and other things your runtime doesn't use. That's the problem `slim` solves.
+The full images ship with compilers, curl, git, and other things your runtime doesn't use. That's the problem bookworm-slim solves.
 
 :::warn
-`bullseye` security updates end in June August 31, 2026. Running it in production after that means you're patching manually or not at all.
+`bullseye` security updates end in August 31, 2026. Running it in production after that means you're patching manually or not at all.
 :::
 
 ## slim — The Boring Default That Works
 
-`node:slim` and `python:slim` same Debian foundation, most non-essential packages stripped out. Same glibc, apt and smaller attack surface.
+`node:slim` and `python:slim` share the same Debian foundation, most non-essential packages stripped out. Same glibc, apt and smaller attack surface.
 
-> This is my default. It handles the vast majority of real dependency trees without drama, and fewer packages means fewer findings when a scanner runs.
+> This is my default node Docker image. It handles the vast majority of real dependency trees without drama, and fewer packages means fewer findings when a scanner runs.
 
 ### What's missing
 
@@ -107,7 +107,7 @@ Diagnostic tools. There is no `curl`, no `strace` by default. During an incident
 
 Alpine gets picked because the numbers look good. A Node.js Alpine image sits around 40–50 MB. That's the whole pitch.
 
-The actual catch is `musl` libc. Alpine doesn't ship glibc it uses musl, a different C standard library. For a pure JavaScript service with no native extensions, this usually doesn't surface. Add anything that compiles C during `npm install` ([sharp](https://www.npmjs.com/package/sharp) or [prisma](https://www.npmjs.com/package/prisma) as example), and the trouble starts.
+The actual catch is musl vs glibc. Alpine doesn't ship glibc it uses musl, a different C standard library. For a pure JavaScript service with no native extensions, this usually doesn't surface. Add anything that compiles C during `npm install` ([sharp](https://www.npmjs.com/package/sharp) or [prisma](https://www.npmjs.com/package/prisma) as example), and the trouble starts.
 
 ```mermaid caption=Workflow when project needs to compile C
 graph TD
@@ -118,7 +118,7 @@ graph TD
     D --> F[Use slim]
 ```
 
-They saying Python is where this gets painful. Not all packages publish musl-compatible wheels, so pip falls back to compiling from source. That often fails. The error messages point everywhere except the actual problem.
+Python is where this gets particularly painful. Not all packages publish musl-compatible wheels, so pip falls back to compiling from source. That often fails. The error messages point everywhere except the actual problem.
 
 :::info
 Alpine's size is real. The compatibility surface is narrower than most people expect. Don't pick it because the number looks good.
@@ -165,7 +165,7 @@ The trade-off is purely about how much you trust your observability when somethi
 
 ## Chainguard Wolfi — The Security-First Option
 
-Wolfi is a lightweight Linux distribution built specifically for containers, no kernel included (use host kernel). Every image ships with an SBOM (Software Bill of Materials) and Sigstore signature.
+Wolfi is a lightweight Linux distribution built specifically for container security, no kernel included (use host kernel). Every image ships with an SBOM (Software Bill of Materials) and Sigstore signature.
 
 The CVE numbers are hard to ignore. Standard Debian-based Docker Hub images average around 280 known CVEs. Chainguard images sit at zero or near-zero. When upstream security fix lands, Wolfi picks it up, new image is out within hours instead of waiting for a Debian release cycle.
 
@@ -173,9 +173,18 @@ The CVE numbers are hard to ignore. Standard Debian-based Docker Hub images aver
 Greenfield project with compliance requirements? Evaluate it properly. Everyone else wait until a scanner report makes the case for you.
 :::
 
-## Multi-Stage Builds: What Actually Moves the Needle
+You can verify the image yourself without pulling or building locally:
 
-Regardless of which image you pick, the build structure matters as much as the base. Multi-stage builds keep build-time dependencies out of the runtime layer. Compilers, dev tools, test runners stay in the builder stage and never ship.
+```bash
+docker scout cves node:22-slim
+docker scout cves cgr.dev/chainguard/node:latest
+```
+
+[Docker Scout](https://docs.docker.com/scout/) queries the remote image registry directly and reports known CVEs for the published image layers.
+
+## Multi-Stage Build: What Actually Moves the Needle
+
+Regardless of which image you pick, the build structure matters as much as the base. Multi-stage build keep build-time dependencies out of the runtime layer. Compilers, dev tools, test runners stay in the builder stage and never ship.
 
 ```dockerfile file=Dockerfile
 # Stage 1 — Install dependencies
@@ -205,14 +214,17 @@ No build toolchain in production and no dev dependencies. Doesn't run as root. T
 
 ## Mistakes That Show Up Everywhere
 
-- `node:latest` in production. Every CI build silently pulls whatever `:latest` is that day.
-  - Pin a version `node:22.11.0-slim`. Rebuilds become reproducible and rollbacks become possible.
-- **Picking Alpine without testing the full dependency tree.**
-  - Run `docker build` with the complete production dependency set on a clean machine before committing. If it breaks, you've saved a CI debugging session much time from now.
-- **Single-stage builds shipping dev dependencies.** `npm install` in a single stage pulls everything, including tools you don't need at runtime.
-  - Use `npm ci --omit=dev` or better, split into stages.
-- **Running as root.** There's no good reason to leave it out.
-  - `USER node` is one line. It belongs in every runtime stage.
+:::warn{title="node:latest in production."}
+Every CI build silently pulls whatever `:latest` is that day. Pin a version `node:22.11.0-slim`. Rebuilds become reproducible and rollbacks become possible.
+:::
+
+:::warn{title="Single-stage builds shipping dev dependencies."}
+`npm install` in a single stage pulls everything, including tools you don't need at runtime. Use `npm ci --omit=dev` or better, split into stages.
+:::
+
+:::danger{title="Running as root."}
+There's no good reason to leave it out. `USER node` is one line. It belongs in every runtime stage.
+:::
 
 ## Decision Flow
 
@@ -230,8 +242,8 @@ flowchart TD
     G -->|No| I[slim]
 ```
 
-:::info
-Most paths end at `slim`. That's not a coincidence — it's just a genuinely good default for most situations.
+:::success{title="The Winner"}
+Most paths end at `slim` (bookworm-slim). That's not a coincidence — it's just a genuinely good default for most situations.
 :::
 
 ## FAQ
@@ -258,8 +270,8 @@ Only if migration is genuinely blocked. Security updates end on August 31, 2026.
 
 ## Conclusion
 
-Most paths through this decision end at `slim`. Not because it's clever, but because it works: glibc compatibility, active patches, a size you can live with, and a runtime you can actually debug when something breaks.
+Most paths through this decision end at `slim` as Docker base image. Not because it's clever, but because it works: glibc compatibility, active patches, a size you can live with, and a runtime you can actually debug when something breaks.
 
-Multi-stage builds, pinned versions, non-root user — do all of that regardless of which image you pick. It's table stakes, not optimization.
+Multi-stage build, pinned version, non-root user — do all of that regardless of which image you pick. It's table stakes, not optimization.
 
 Everything else is context-specific. Adjust when you have a concrete reason, not before.

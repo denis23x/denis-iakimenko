@@ -38,6 +38,7 @@ html[data-theme="dark"] {
   background-color: var(--calloutBgColor);
   border: var(--calloutBorderThickness) solid var(--calloutBorderColor);
   border-radius: var(--calloutBorderRadius);
+  margin: 20px 0;
 }
 
 details.callout summary::marker {
