@@ -1,6 +1,6 @@
 ---
-title: Docker Base Image — bookworm-slim, alpine, distroless, and Chainguard explained
-description: How to choose a Docker base image — compare bookworm-slim, alpine, distroless, and Chainguard. Covers CVE surface, musl vs glibc compatibility, and multi-stage build patterns.
+title: Docker Base Images — bookworm-slim, alpine, distroless, and Chainguard Wolfi
+description: Compare Docker base images — bookworm-slim, alpine, distroless, Chainguard Wolfi. CVE surface, musl vs glibc, and multi-stage build patterns covered.
 pubDatetime: 2026-05-03T10:00:00Z
 modDatetime: 2026-05-05T10:00:00Z
 author: Denis Iakimenko
