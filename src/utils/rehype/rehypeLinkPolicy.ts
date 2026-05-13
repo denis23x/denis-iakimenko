@@ -12,18 +12,7 @@ type RehypeElementNode = {
 };
 
 export default function rehypeLinkPolicy() {
-  const trusted = [
-    "supabase.com",
-    "docker.com",
-    "coolify.io",
-    "postman.com",
-    "apidog.com",
-    "google.com",
-    "developers.google.com",
-    "mozilla.org",
-    "developer.mozilla.org",
-    "plausible.io",
-  ];
+  const trusted = ["denis-iakimenko.com"];
   const sponsored: string[] = [];
 
   return (tree: Tree) => {

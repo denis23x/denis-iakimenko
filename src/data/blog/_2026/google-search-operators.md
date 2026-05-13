@@ -2,7 +2,7 @@
 title: Search Google Like a Pro — site:, filetype:, and Other Operators That Actually Work
 description: A practical guide to Google search operators — site:, filetype:, intitle:, inurl:, and more. Filter noise, find exact files, and build precise queries that save you hours.
 pubDatetime: 2026-05-03T10:00:00Z
-modDatetime: 2026-05-03T10:00:00Z
+modDatetime: 2026-05-13T10:00:00Z
 author: Denis Iakimenko
 slug: google-search-operators
 featured: false
@@ -23,9 +23,9 @@ tags:
 
 ## Introduction
 
-For a long time I searched Google the same way everyone does: two or three words, scroll through whatever came back, open five tabs, close four of them. Then I added `filetype:pdf` to a query once by accident. The PDF spec I'd been hunting through blog summaries appeared in the first result.
+For a long time I searched Google the same way everyone does: two or three words, scroll through whatever came back, open five tabs, close four of them. Then I added `filetype:pdf` to a query and the PDF spec I'd been hunting through blog summaries appeared in the first result.
 
-That was embarrassing and useful in equal measure.
+> That was embarrassing and useful in equal measure.
 
 This guide covers the operators that work in 2026, with examples you can copy. No deprecated commands that old SEO articles still recommend. Just the queries that actually filter results.
 
@@ -33,21 +33,21 @@ This guide covers the operators that work in 2026, with examples you can copy. N
 
 Before anything else: **no space after the colon**.
 
-```
-# Correct
-site:example.com
+:::success{title="Correct"}
+site\:example.com
+:::
 
-# Wrong — operator is ignored
+:::danger{title="Wrong — operator is ignored"}
 site: example.com
-```
+:::
 
 That single space tells Google you're searching for the literal word "site:" as a keyword. The operator doesn't fire. This applies to every operator in this guide — `filetype:`, `intitle:`, `inurl:`, all of them.
 
-```mermaid
+```mermaid caption=The One Rule That Breaks Half Your Queries
 flowchart LR
     A[Your query] --> B{Space after colon?}
-    B -- Yes --> C[Operator ignored\nKeyword search only]
-    B -- No --> D[Operator active\nFiltered results]
+    B -- Yes --> C[Operator ignored]
+    B -- No --> D[Operator active]
 ```
 
 ## The Core Operators
@@ -56,20 +56,14 @@ flowchart LR
 
 Restricts results to a single domain. Useful when the site's own search is weak, missing, or doesn't surface older content.
 
-```
-site:github.com astro middleware
-site:docs.docker.com volume mount
-site:example.com "terms of service"
-```
+- [site\:github.com middleware](https://www.google.com/search?q=site:github.com%20middleware)
 
 You can also scope it to a subdomain or a specific path:
 
-```
-site:docs.example.com authentication
-site:example.com/blog observability
-```
+- [site\:docs.docker.com authentication](https://www.google.com/search?q=site:github.com%20middleware)
+- [site\:rxjs.dev/api observable](https://www.google.com/search?q=site:github.com%20middleware)
 
-:::note
+:::info
 `site:` returns an estimated count, not an exact one. Google's number is often wrong by a wide margin. Use it as a rough indicator.
 :::
 

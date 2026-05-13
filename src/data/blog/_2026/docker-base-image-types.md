@@ -214,15 +214,15 @@ No build toolchain in production and no dev dependencies. Doesn't run as root. T
 
 ## Mistakes That Show Up Everywhere
 
-:::warn{title="node:latest in production."}
+:::warn{title="node:latest in production"}
 Every CI build silently pulls whatever `:latest` is that day. Pin a version `node:22.11.0-slim`. Rebuilds become reproducible and rollbacks become possible.
 :::
 
-:::warn{title="Single-stage builds shipping dev dependencies."}
+:::warn{title="Single-stage builds shipping dev dependencies"}
 `npm install` in a single stage pulls everything, including tools you don't need at runtime. Use `npm ci --omit=dev` or better, split into stages.
 :::
 
-:::danger{title="Running as root."}
+:::danger{title="Running as root"}
 There's no good reason to leave it out. `USER node` is one line. It belongs in every runtime stage.
 :::
 
