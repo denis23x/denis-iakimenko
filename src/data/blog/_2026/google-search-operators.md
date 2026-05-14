@@ -1,6 +1,6 @@
 ---
-title: Search Google Like a Pro — site:, filetype:, and Other Operators That Actually Work
-description: A practical guide to Google search operators — site:, filetype:, intitle:, inurl:, and more. Filter noise, find exact files, and build precise queries that save you hours.
+title: Search Google Like a Pro. site:, filetype:, and Other Operators That Actually Work
+description: A practical guide to Google search operators site:, filetype:, intitle:, inurl:, and more. Filter noise, find exact files, and build precise queries that save you hours.
 pubDatetime: 2026-05-03T10:00:00Z
 modDatetime: 2026-05-13T10:00:00Z
 author: Denis Iakimenko
@@ -41,7 +41,7 @@ site\:example.com
 site: example.com
 :::
 
-That single space tells Google you're searching for the literal word "site:" as a keyword. The operator doesn't fire. This applies to every operator in this guide — `filetype:`, `intitle:`, `inurl:`, all of them.
+That single space tells Google you're searching for the literal word "site:" as a keyword. The operator doesn't fire. This applies to every operator in this guide `filetype:`, `intitle:`, `inurl:`, all of them.
 
 ```mermaid caption=The One Rule That Breaks Half Your Queries
 flowchart LR
@@ -69,34 +69,27 @@ You can also scope it to a subdomain or a specific path:
 
 ---
 
-### `filetype:` — Find Specific File Formats
+### `filetype:` and `ext:` — Find Specific File Formats
 
 Forces Google to return only results of a specific document type. Most people skip this one entirely, which is a shame.
 
-```
-filetype:pdf docker security checklist
-filetype:xlsx budget template
-filetype:pptx product roadmap 2026
-```
+- [filetype\:pdf security checklist](https://www.google.com/search?q=filetype:pdf%20security%20checklist)
+- [filetype\:xlsx budget template](https://www.google.com/search?q=filetype:xlsx%20budget%20template)
+- [filetype\:pptx roadmap 2026](https://www.google.com/search?q=filetype:pptx%20roadmap%202026)
 
-`ext:` works the same way:
+`ext:` works the same way.
 
-```
-ext:docx contract template remote work
-```
+Common formats that work reliably: `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`, `txt`, `csv`. Do you need more formats? Check this out [Common media types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types)
 
-Common formats that work reliably: `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`, `txt`, `csv`.
-
+:::info{title="Pro Tip"}
 Combine with `site:` to search documents on a specific domain:
 
-```
-site:nasa.gov filetype:pdf climate report
-site:*.gov filetype:xlsx procurement data
-```
+- [site\:nasa.gov filetype\:pdf climate report](https://www.google.com/search?q=site:nasa.gov%20filetype:pdf%20climate%20report)
+- [site\:\*.gov filetype\:xlsx unemployment rates](https://www.google.com/search?q=site:*.gov%20filetype:xlsx%20unemployment%20rates)
 
-:::tip
-Government and university websites frequently publish spreadsheets and reports that never appear in normal search results. `site:*.gov filetype:pdf` or `site:*.edu filetype:pdf` is a fast way to find primary sources.
 :::
+
+Government and university websites frequently publish spreadsheets and reports that never appear in normal search results. `site:*.gov filetype:pdf` or `site:*.edu filetype:pdf` is a fast way to find primary sources.
 
 ---
 
@@ -104,17 +97,13 @@ Government and university websites frequently publish spreadsheets and reports t
 
 Forces Google to match the phrase exactly, in that word order. No synonyms, no rearranging.
 
-```
-"failed to resolve import"
-"permission denied (publickey)"
-"docker compose up --build"
-```
+- ["failed to resolve import"](https://www.google.com/search?q=%22failed%20to%20resolve%20import%22)
+- ["permission denied (publickey)"](https://www.google.com/search?q=%22permission%20denied%20%28publickey%29%22)
+- ["docker compose up --build"](https://www.google.com/search?q=%22docker%20compose%20up%20--build%22)
 
-Where this shines is error messages. Paste the exact error string in quotes and the relevant Stack Overflow thread or GitHub issue comes up immediately.
+**Where this shines is error messages.** Paste the exact error string in quotes and the relevant Stack Overflow thread or GitHub issue comes up immediately.
 
-```
-site:stackoverflow.com "TypeError: Cannot read properties of undefined"
-```
+- [site\:stackoverflow.com "Cannot read properties of undefined"](https://www.google.com/search?q=site:stackoverflow.com%20%22Cannot%20read%20properties%20of%20undefined%22)
 
 ---
 
@@ -122,17 +111,12 @@ site:stackoverflow.com "TypeError: Cannot read properties of undefined"
 
 The minus sign removes results that include a specific word. One of the cleanest ways to filter noise.
 
-```
-jaguar speed -car
-react router -native
-python tutorial -youtube
-```
+- [jaguar speed -car](https://www.google.com/search?q=jaguar%20speed%20-car)
+- [python tutorial -youtube](https://www.google.com/search?q=python%20tutorial%20-youtube)
 
 You can also exclude entire domains:
 
-```
-"kubernetes ingress" -site:stackoverflow.com -site:reddit.com
-```
+- ["kubernetes ingress" -site\:stackoverflow.com -site\:reddit.com](https://www.google.com/search?q=%22kubernetes%20ingress%22%20-site:stackoverflow.com%20-site:reddit.com)
 
 This is especially useful when you want official documentation but searches keep surfacing forum threads and blog summaries instead.
 
@@ -142,17 +126,10 @@ This is especially useful when you want official documentation but searches keep
 
 Searches for results matching one term or the other. Must be uppercase `OR`.
 
-```
-docker OR podman rootless setup
-("debian bookworm" OR "debian bullseye") nginx
-site:example.com (refund OR return OR cancellation policy)
-```
+- [("debian bookworm" OR "debian bullseye") nginx](https://www.google.com/search?q=%28%22debian%20bookworm%22%20OR%20%22debian%20bullseye%22%29%20nginx)
+- [site\:\*.com (refund OR return OR cancellation policy)](https://www.google.com/search?q=site:*.com%20%28refund%20OR%20return%20OR%20cancellation%20policy%29)
 
-The pipe `|` does the same thing:
-
-```
-site:example.com (login | signin | auth)
-```
+The pipe `|` does the same thing.
 
 ---
 
@@ -160,11 +137,9 @@ site:example.com (login | signin | auth)
 
 `intitle:` requires the word to appear in the `<title>` tag. `allintitle:` requires all words in the title.
 
-```
-intitle:"write for us" react
-intitle:"getting started" kubernetes
-allintitle:docker security hardening checklist
-```
+- [intitle\:"write for us" react](https://www.google.com/search?q=intitle:%22write%20for%20us%22%20react)
+- [intitle\:"getting started" kubernetes](https://www.google.com/search?q=intitle:%22getting%20started%22%20kubernetes)
+- [allintitle\:docker security hardening checklist](https://www.google.com/search?q=allintitle:docker%20security%20hardening%20checklist)
 
 Good for finding template-style pages: guest post invitations, resource lists, documentation indexes. If a site structures its titles consistently, `intitle:` surfaces exactly those pages.
 
@@ -174,11 +149,9 @@ Good for finding template-style pages: guest post invitations, resource lists, d
 
 Searches for terms inside the URL itself, not the page content. Pages are often categorized by their URL structure (`/blog/`, `/docs/`, `/api/`), so this is a fast way to find the right section.
 
-```
-site:example.com inurl:blog "performance"
-site:example.com inurl:docs authentication
-allinurl:api v1 users
-```
+- [site\:example.com inurl\:blog "performance"](https://www.google.com/search?q=site:example.com%20inurl:blog%20%22performance%22)
+- [site\:example.com inurl\:docs authentication](https://www.google.com/search?q=site:example.com%20inurl:docs%20authentication)
+- [allinurl\:api v1 users](https://www.google.com/search?q=allinurl:api%20v1%20users)
 
 ---
 
@@ -186,10 +159,8 @@ allinurl:api v1 users
 
 Restricts results to pages where the term appears in the body content, not just the title or URL.
 
-```
-intext:"kubernetes readiness probe" configuration
-intext:"rate limiting" nginx upstream
-```
+- [intext\:"kubernetes readiness probe" configuration](https://www.google.com/search?q=intext:%22kubernetes%20readiness%20probe%22%20configuration)
+- [intext\:"rate limiting" nginx upstream](https://www.google.com/search?q=intext:%22rate%20limiting%22%20nginx%20upstream)
 
 Less common than the others, but useful when the title and URL don't give enough precision.
 
@@ -199,11 +170,9 @@ Less common than the others, but useful when the title and URL don't give enough
 
 Filters results by publication or indexation date.
 
-```
-next.js app router after:2025-06-01
-docker compose v2 before:2024-01-01
-site:example.com changelog after:2026-01-01
-```
+- [next.js app router after\:2025-06-01](https://www.google.com/search?q=next.js%20app%20router%20after:2025-06-01)
+- [docker compose v2 before\:2024-01-01](https://www.google.com/search?q=docker%20compose%20v2%20before:2024-01-01)
+- [site\:example.com changelog after\:2026-01-01](https://www.google.com/search?q=site:example.com%20changelog%20after:2026-01-01)
 
 :::warn
 These filters apply to when Google indexed the page, not necessarily when it was written. A page updated in 2023 might still surface in a `before:2022` query if it was first indexed earlier. Treat dates as a rough filter, not a hard cutoff.
@@ -215,11 +184,9 @@ These filters apply to when Google indexed the page, not necessarily when it was
 
 Substitutes an unknown word in a phrase.
 
-```
-"best * for docker images"
-"how to * in astro"
-"* is not defined"
-```
+- ["best \* for docker images"](https://www.google.com/search?q=%22best%20*%20for%20docker%20images%22)
+- ["how to \* in astro"](https://www.google.com/search?q=%22how%20to%20*%20in%20astro%22)
+- ["\* is not defined"](https://www.google.com/search?q=%22*%20is%20not%20defined%22)
 
 Useful when you remember the structure of a phrase but not the exact wording.
 
@@ -229,10 +196,8 @@ Useful when you remember the structure of a phrase but not the exact wording.
 
 Finds values within a numeric range.
 
-```
-laptop 800..1200 usd
-iphone 13..15 battery comparison
-```
+- [laptop 800..1200 usd](https://www.google.com/search?q=laptop%20800..1200%20usd)
+- [iphone 13..15 battery comparison](https://www.google.com/search?q=iphone%2013..15%20battery%20comparison)
 
 Works for prices, years, version numbers.
 
@@ -268,48 +233,34 @@ Copy these and swap in your own values.
 
 ### Search documentation and exclude forums
 
-```
-"error message here" site:docs.example.com -site:stackoverflow.com -site:reddit.com
-```
+- ["error message here" site\:docs.example.com -site\:stackoverflow.com -site\:reddit.com](https://www.google.com/search?q=%22error%20message%20here%22%20site:docs.example.com%20-site:stackoverflow.com%20-site:reddit.com)
 
 ### Find all PDFs on a government or university site
 
-```
-site:*.gov filetype:pdf "topic keyword"
-site:*.edu filetype:pdf machine learning
-```
+- [site\:\*.gov filetype\:pdf "topic keyword"](https://www.google.com/search?q=site:*.gov%20filetype:pdf%20%22topic%20keyword%22)
+- [site\:\*.edu filetype\:pdf machine learning](https://www.google.com/search?q=site:*.edu%20filetype:pdf%20machine%20learning)
 
 ### Find recent content on a topic
 
-```
-"docker networking" after:2025-06-01
-site:example.com security after:2026-01-01
-```
+- ["docker networking" after\:2025-06-01](https://www.google.com/search?q=%22docker%20networking%22%20after:2025-06-01)
+- [site\:example.com security after\:2026-01-01](https://www.google.com/search?q=site:example.com%20security%20after:2026-01-01)
 
 ### Find content across competing domains simultaneously
 
-```
-(site:github.com OR site:gitlab.com) "self-hosted runner" configuration
-```
+- [(site\:github.com OR site\:gitlab.com) "self-hosted runner" configuration](https://www.google.com/search?q=%28site:github.com%20OR%20site:gitlab.com%29%20%22self-hosted%20runner%22%20configuration)
 
 ### Search a specific section of a site
 
-```
-site:example.com inurl:blog "observability"
-site:example.com inurl:changelog 2026
-```
+- [site\:example.com inurl\:blog "observability"](https://www.google.com/search?q=site:example.com%20inurl:blog%20%22observability%22)
+- [site\:example.com inurl\:changelog 2026](https://www.google.com/search?q=site:example.com%20inurl:changelog%202026)
 
 ### Find guest post opportunities
 
-```
-intitle:"write for us" inurl:"write-for-us" developer tools
-```
+- [intitle\:"write for us" inurl\:"write-for-us" developer tools](https://www.google.com/search?q=intitle:%22write%20for%20us%22%20inurl:%22write-for-us%22%20developer%20tools)
 
 ### Locate pages with a keyword in title and URL
 
-```
-intitle:"getting started" inurl:docs astro
-```
+- [intitle\:"getting started" inurl\:docs astro](https://www.google.com/search?q=intitle:%22getting%20started%22%20inurl:docs%20astro)
 
 ---
 
