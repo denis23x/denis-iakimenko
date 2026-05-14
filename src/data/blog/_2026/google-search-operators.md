@@ -63,7 +63,7 @@ You can also scope it to a subdomain or a specific path:
 - [site\:docs.docker.com authentication](https://www.google.com/search?q=site:github.com%20middleware)
 - [site\:rxjs.dev/api observable](https://www.google.com/search?q=site:github.com%20middleware)
 
-:::info
+:::warn
 `site:` returns an estimated count, not an exact one. Google's number is often wrong by a wide margin. Use it as a rough indicator.
 :::
 
@@ -75,13 +75,12 @@ Forces Google to return only results of a specific document type. Most people sk
 
 - [filetype\:pdf security checklist](https://www.google.com/search?q=filetype:pdf%20security%20checklist)
 - [filetype\:xlsx budget template](https://www.google.com/search?q=filetype:xlsx%20budget%20template)
-- [filetype\:pptx roadmap 2026](https://www.google.com/search?q=filetype:pptx%20roadmap%202026)
 
 `ext:` works the same way.
 
 Common formats that work reliably: `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`, `txt`, `csv`. Do you need more formats? Check this out [Common media types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types)
 
-:::info{title="Pro Tip"}
+:::info
 Combine with `site:` to search documents on a specific domain:
 
 - [site\:nasa.gov filetype\:pdf climate report](https://www.google.com/search?q=site:nasa.gov%20filetype:pdf%20climate%20report)
@@ -90,20 +89,6 @@ Combine with `site:` to search documents on a specific domain:
 :::
 
 Government and university websites frequently publish spreadsheets and reports that never appear in normal search results. `site:*.gov filetype:pdf` or `site:*.edu filetype:pdf` is a fast way to find primary sources.
-
----
-
-### `"quotes"` — Exact Phrase Match
-
-Forces Google to match the phrase exactly, in that word order. No synonyms, no rearranging.
-
-- ["failed to resolve import"](https://www.google.com/search?q=%22failed%20to%20resolve%20import%22)
-- ["permission denied (publickey)"](https://www.google.com/search?q=%22permission%20denied%20%28publickey%29%22)
-- ["docker compose up --build"](https://www.google.com/search?q=%22docker%20compose%20up%20--build%22)
-
-**Where this shines is error messages.** Paste the exact error string in quotes and the relevant Stack Overflow thread or GitHub issue comes up immediately.
-
-- [site\:stackoverflow.com "Cannot read properties of undefined"](https://www.google.com/search?q=site:stackoverflow.com%20%22Cannot%20read%20properties%20of%20undefined%22)
 
 ---
 
@@ -122,6 +107,22 @@ This is especially useful when you want official documentation but searches keep
 
 ---
 
+### `"quotes"` — Exact Phrase Match
+
+Forces Google to match the phrase exactly, in that word order. No synonyms, no rearranging.
+
+- ["permission denied (publickey)"](https://www.google.com/search?q=%22permission%20denied%20%28publickey%29%22)
+- ["docker compose up --build"](https://www.google.com/search?q=%22docker%20compose%20up%20--build%22)
+
+:::info
+Where this shines is error messages. Paste the exact error string in quotes and the relevant Stack Overflow thread or GitHub issue comes up immediately.
+
+- [site\:stackoverflow.com "Cannot read properties of undefined"](https://www.google.com/search?q=site:stackoverflow.com%20%22Cannot%20read%20properties%20of%20undefined%22)
+
+:::
+
+---
+
 ### `OR` and `|` — Either This or That
 
 Searches for results matching one term or the other. Must be uppercase `OR`.
@@ -137,11 +138,12 @@ The pipe `|` does the same thing.
 
 `intitle:` requires the word to appear in the `<title>` tag. `allintitle:` requires all words in the title.
 
-- [intitle\:"write for us" react](https://www.google.com/search?q=intitle:%22write%20for%20us%22%20react)
 - [intitle\:"getting started" kubernetes](https://www.google.com/search?q=intitle:%22getting%20started%22%20kubernetes)
-- [allintitle\:docker security hardening checklist](https://www.google.com/search?q=allintitle:docker%20security%20hardening%20checklist)
+- [allintitle\:docker security](https://www.google.com/search?q=allintitle:docker%20security)
 
-Good for finding template-style pages: guest post invitations, resource lists, documentation indexes. If a site structures its titles consistently, `intitle:` surfaces exactly those pages.
+:::info
+Good for finding template-style pages: guest post invitations, resource lists, documentation indexes. If a site structures it's titles consistently, `intitle:` surfaces exactly those pages.
+:::
 
 ---
 
@@ -149,20 +151,8 @@ Good for finding template-style pages: guest post invitations, resource lists, d
 
 Searches for terms inside the URL itself, not the page content. Pages are often categorized by their URL structure (`/blog/`, `/docs/`, `/api/`), so this is a fast way to find the right section.
 
-- [site\:example.com inurl\:blog "performance"](https://www.google.com/search?q=site:example.com%20inurl:blog%20%22performance%22)
-- [site\:example.com inurl\:docs authentication](https://www.google.com/search?q=site:example.com%20inurl:docs%20authentication)
-- [allinurl\:api v1 users](https://www.google.com/search?q=allinurl:api%20v1%20users)
-
----
-
-### `intext:` — Word in the Page Body
-
-Restricts results to pages where the term appears in the body content, not just the title or URL.
-
-- [intext\:"kubernetes readiness probe" configuration](https://www.google.com/search?q=intext:%22kubernetes%20readiness%20probe%22%20configuration)
-- [intext\:"rate limiting" nginx upstream](https://www.google.com/search?q=intext:%22rate%20limiting%22%20nginx%20upstream)
-
-Less common than the others, but useful when the title and URL don't give enough precision.
+- [site\:\*.com inurl\:blog "performance"](https://www.google.com/search?q=site:*.com%20inurl:blog%20%22performance%22)
+- [site\:\*.com inurl\:docs authentication](https://www.google.com/search?q=site:*.com%20inurl:docs%20authentication)
 
 ---
 
@@ -172,7 +162,6 @@ Filters results by publication or indexation date.
 
 - [next.js app router after\:2025-06-01](https://www.google.com/search?q=next.js%20app%20router%20after:2025-06-01)
 - [docker compose v2 before\:2024-01-01](https://www.google.com/search?q=docker%20compose%20v2%20before:2024-01-01)
-- [site\:example.com changelog after\:2026-01-01](https://www.google.com/search?q=site:example.com%20changelog%20after:2026-01-01)
 
 :::warn
 These filters apply to when Google indexed the page, not necessarily when it was written. A page updated in 2023 might still surface in a `before:2022` query if it was first indexed earlier. Treat dates as a rough filter, not a hard cutoff.
@@ -184,7 +173,6 @@ These filters apply to when Google indexed the page, not necessarily when it was
 
 Substitutes an unknown word in a phrase.
 
-- ["best \* for docker images"](https://www.google.com/search?q=%22best%20*%20for%20docker%20images%22)
 - ["how to \* in astro"](https://www.google.com/search?q=%22how%20to%20*%20in%20astro%22)
 - ["\* is not defined"](https://www.google.com/search?q=%22*%20is%20not%20defined%22)
 
@@ -194,12 +182,10 @@ Useful when you remember the structure of a phrase but not the exact wording.
 
 ### `..` — Number Range
 
-Finds values within a numeric range.
+Finds values within a numeric range. Works for prices, years, version numbers.
 
 - [laptop 800..1200 usd](https://www.google.com/search?q=laptop%20800..1200%20usd)
 - [iphone 13..15 battery comparison](https://www.google.com/search?q=iphone%2013..15%20battery%20comparison)
-
-Works for prices, years, version numbers.
 
 ---
 
@@ -207,7 +193,7 @@ Works for prices, years, version numbers.
 
 Single operators are useful. Combinations are where things get precise. Here's how the pieces fit together:
 
-```mermaid
+```mermaid caption=How to Build Combined Queries
 flowchart TD
     Start[Research goal] --> A[Which domain?]
     A -- Specific site --> B[site:domain.com]
@@ -225,45 +211,6 @@ flowchart TD
     J --> K
 ```
 
----
-
-## Ready-Made Query Templates
-
-Copy these and swap in your own values.
-
-### Search documentation and exclude forums
-
-- ["error message here" site\:docs.example.com -site\:stackoverflow.com -site\:reddit.com](https://www.google.com/search?q=%22error%20message%20here%22%20site:docs.example.com%20-site:stackoverflow.com%20-site:reddit.com)
-
-### Find all PDFs on a government or university site
-
-- [site\:\*.gov filetype\:pdf "topic keyword"](https://www.google.com/search?q=site:*.gov%20filetype:pdf%20%22topic%20keyword%22)
-- [site\:\*.edu filetype\:pdf machine learning](https://www.google.com/search?q=site:*.edu%20filetype:pdf%20machine%20learning)
-
-### Find recent content on a topic
-
-- ["docker networking" after\:2025-06-01](https://www.google.com/search?q=%22docker%20networking%22%20after:2025-06-01)
-- [site\:example.com security after\:2026-01-01](https://www.google.com/search?q=site:example.com%20security%20after:2026-01-01)
-
-### Find content across competing domains simultaneously
-
-- [(site\:github.com OR site\:gitlab.com) "self-hosted runner" configuration](https://www.google.com/search?q=%28site:github.com%20OR%20site:gitlab.com%29%20%22self-hosted%20runner%22%20configuration)
-
-### Search a specific section of a site
-
-- [site\:example.com inurl\:blog "observability"](https://www.google.com/search?q=site:example.com%20inurl:blog%20%22observability%22)
-- [site\:example.com inurl\:changelog 2026](https://www.google.com/search?q=site:example.com%20inurl:changelog%202026)
-
-### Find guest post opportunities
-
-- [intitle\:"write for us" inurl\:"write-for-us" developer tools](https://www.google.com/search?q=intitle:%22write%20for%20us%22%20inurl:%22write-for-us%22%20developer%20tools)
-
-### Locate pages with a keyword in title and URL
-
-- [intitle\:"getting started" inurl\:docs astro](https://www.google.com/search?q=intitle:%22getting%20started%22%20inurl:docs%20astro)
-
----
-
 ## Quick Reference Table
 
 | Goal                 | Operator    | Example                            |
@@ -272,16 +219,13 @@ Copy these and swap in your own values.
 | Specific file format | `filetype:` | `filetype:pdf security checklist`  |
 | Exact phrase         | `"..."`     | `"cannot find module"`             |
 | Exclude a word       | `-`         | `react tutorial -hooks`            |
-| Either of two terms  | `OR` / `\|` | `docker OR podman`                 |
+| Either of two terms  | `OR`        | `docker OR podman`                 |
 | Word in title        | `intitle:`  | `intitle:"write for us"`           |
 | Word in URL          | `inurl:`    | `inurl:blog astro`                 |
-| Word in body text    | `intext:`   | `intext:"readiness probe"`         |
 | After a date         | `after:`    | `after:2025-01-01`                 |
 | Before a date        | `before:`   | `before:2024-06-01`                |
 | Wildcard word        | `*`         | `"how to * in react"`              |
 | Number range         | `..`        | `laptop 700..1000 usd`             |
-
----
 
 ## What No Longer Works in 2026
 
@@ -300,31 +244,21 @@ The following operators are deprecated or behave unreliably:
 If you see an article recommending any of these, check the publish date.
 :::
 
----
-
 ## Where Operators Are Actually Useful
 
 A few real workflows where search operators save meaningful time:
 
-**Debugging errors.** Paste the exact error string in quotes. Add the framework name. Add `after:` with a recent date. You stop seeing results about a different version of the same problem from three years ago.
-
-**Finding primary sources.** `site:*.gov filetype:pdf` or `site:*.edu filetype:pdf` cuts straight to government reports and academic papers rather than articles summarizing them at arm's length.
-
-**Auditing your own site.** `site:yourdomain.com filetype:pdf` shows what Google has indexed. Sometimes there are PDFs you forgot about, old resources that are technically public, pages you didn't mean to leave indexed.
-
-**Competitive research.** `site:competitor.com filetype:pdf` occasionally surfaces whitepapers and pricing documents that are technically accessible but not prominently linked. Companies upload things to their servers and forget.
-
-**Finding actual files.** `intitle:"template" filetype:docx contract remote` skips the listicle articles and finds downloadable files directly.
-
----
+- **Debugging errors.** Paste the exact error string in quotes. Add the framework name. Add `after:` with a recent date. You stop seeing results about a different version of the same problem from three years ago.
+- **Finding primary sources.** `site:*.gov filetype:pdf` or `site:*.edu filetype:pdf` cuts straight to government reports and academic papers rather than articles summarizing them at arm's length.
+- **Auditing your own site.** `site:yourdomain.com filetype:pdf` shows what Google has indexed. Sometimes there are PDFs you forgot about, old resources that are technically public, pages you didn't mean to leave indexed.
+- **Competitive research.** `site:competitor.com filetype:pdf` occasionally surfaces whitepapers and pricing documents that are technically accessible but not prominently linked. Companies upload things to their servers and forget.
+- **Finding actual files.** `intitle:"template" filetype:docx contract remote` skips the listicle articles and finds downloadable files directly.
 
 ## A Note on Ethical Use
 
 Search operators work on publicly indexed data. They filter and surface what Google has already crawled and made searchable — they're not a bypass for authentication or access controls.
 
 Use them for research, documentation hunting, content audits, and competitive analysis. Don't use them to probe for exposed credentials or configuration files belonging to others. The OSINT community calls targeted operator queries "dorks," and using them to access data you're not supposed to see is a different conversation entirely.
-
----
 
 ## FAQ
 
@@ -347,8 +281,6 @@ Some do. `site:` and `filetype:` work. `intitle:` in Image Search looks for the 
 <details><summary>Does Google's AI Overview affect operator results?</summary>
 AI Overviews appear above results but operator queries still filter the blue-link results below. The filtering behavior hasn't changed — though AI Overviews push those results further down the page.
 </details>
-
----
 
 ## Conclusion
 

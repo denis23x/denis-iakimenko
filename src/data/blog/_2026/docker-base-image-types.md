@@ -126,7 +126,7 @@ Alpine's size is real. The compatibility surface is narrower than most people ex
 
 ## distroless — No Shell, No Escape Hatch
 
-Google's distroless images strip out everything except the language runtime and its dependencies.
+Google's distroless images strip out everything except the language runtime and it's dependencies.
 
 - No shell.
 - No package manager.
