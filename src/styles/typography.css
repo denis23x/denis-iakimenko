@@ -29,10 +29,14 @@
     }
 
     a {
-      @apply wrap-break-word text-foreground decoration-solid underline-offset-4 hover:text-accent focus-visible:no-underline;
+      @apply wrap-break-word text-foreground decoration-solid underline-offset-4 focus-visible:no-underline;
 
-      &:not([href^="#"])::after {
-        @apply inline-block px-1 content-['\279A'];
+      &:not([href^="#"]) {
+        @apply text-accent;
+
+        &::after {
+          @apply inline-block px-1 content-['\279A'];
+        }
       }
     }
 
@@ -115,6 +119,10 @@
 
     summary {
       @apply focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent focus-visible:outline-solid;
+
+      &.spoiler {
+        @apply w-fit italic cursor-pointer underline decoration-accent decoration-wavy decoration-2 underline-offset-8;
+      }
     }
 
     pre {

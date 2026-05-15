@@ -228,7 +228,11 @@ There's no good reason to leave it out. `USER node` is one line. It belongs in e
 
 ## Decision Flow
 
-```mermaid
+This decision flow prioritizes operational stability first, then optimizes for image size and security posture only when the team can support the added complexity.
+
+<details><summary class="spoiler">Show spoiler</summary>
+
+```mermaid caption=Base image selection flow for new services
 flowchart TD
     A[New service] --> B{Native C dependencies?}
     B -->|Yes| C[slim]
@@ -245,6 +249,7 @@ flowchart TD
 :::success{title="The Winner"}
 Most paths end at `slim` (bookworm-slim). That's not a coincidence — it's just a genuinely good default for most situations.
 :::
+</details>
 
 ## FAQ
 

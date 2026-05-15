@@ -85,7 +85,6 @@ Combine with `site:` to search documents on a specific domain:
 
 - [site\:nasa.gov filetype\:pdf climate report](https://www.google.com/search?q=site:nasa.gov%20filetype:pdf%20climate%20report)
 - [site\:\*.gov filetype\:xlsx unemployment rates](https://www.google.com/search?q=site:*.gov%20filetype:xlsx%20unemployment%20rates)
-
 :::
 
 Government and university websites frequently publish spreadsheets and reports that never appear in normal search results. `site:*.gov filetype:pdf` or `site:*.edu filetype:pdf` is a fast way to find primary sources.
@@ -118,7 +117,6 @@ Forces Google to match the phrase exactly, in that word order. No synonyms, no r
 Where this shines is error messages. Paste the exact error string in quotes and the relevant Stack Overflow thread or GitHub issue comes up immediately.
 
 - [site\:stackoverflow.com "Cannot read properties of undefined"](https://www.google.com/search?q=site:stackoverflow.com%20%22Cannot%20read%20properties%20of%20undefined%22)
-
 :::
 
 ---
@@ -191,25 +189,35 @@ Finds values within a numeric range. Works for prices, years, version numbers.
 
 ## How to Build Combined Queries
 
-Single operators are useful. Combinations are where things get precise. Here's how the pieces fit together:
+Single operators are useful. Combinations are where things get precise. Here's how the pieces fit together.
+
+<details><summary class="spoiler">Show spoiler</summary>
 
 ```mermaid caption=How to Build Combined Queries
 flowchart TD
-    Start[Research goal] --> A[Which domain?]
-    A -- Specific site --> B[site:domain.com]
-    A -- Any site --> C[Skip site:]
-    B --> D[Which format?]
+    A[Specific domain?]
+    A -- Yes --> B[site:domain.com]
+    A -- No --> C[Skip]
+    B --> D[Specific format?]
     C --> D
-    D -- PDF/XLSX/etc --> E[+ filetype:type]
-    D -- Any format --> F[Skip filetype:]
-    E --> G[What phrase?]
+    D -- Yes --> E[filetype:type]
+    D -- No --> F[Skip]
+    E --> G[Exact match?]
     F --> G
-    G --> H["+ quotes for exact match"]
-    H --> I[Noise to remove?]
-    I -- Yes --> J["+ -word or -site:domain"]
-    I -- No --> K[Run query]
-    J --> K
+    G -- Yes --> H[""quotes""]
+    G -- No --> I[Skip]
+    H --> J[Time bounds?]
+    I --> J
+    J -- Yes --> K[before/after]
+    J -- No --> L[Skip]
+    K --> M[Noise to remove?]
+    L --> M
+    M -- Yes --> N[-noise]
+    M -- No --> O[Skip]
+    N --> P[Your Query]
+    O --> P
 ```
+</details>
 
 ## Quick Reference Table
 
@@ -234,12 +242,12 @@ A lot of older articles still list operators that have been quietly removed. Wor
 :::warn
 The following operators are deprecated or behave unreliably:
 
-- `cache:` — removed in 2024. Use [web.archive.org](https://web.archive.org) instead.
-- `related:` — removed in 2023.
-- `link:` — removed years ago. Use a dedicated backlink tool.
-- `info:` — no longer returns useful output.
-- `+` (forced inclusion) — replaced by quotes.
-- `~` (synonym search) — gone.
+- `cache:` removed in 2024. Use [web.archive.org](https://web.archive.org) instead.
+- `related:` removed in 2023.
+- `link:` removed years ago. Use a dedicated backlink tool.
+- `info:` no longer returns useful output.
+- `+` (forced inclusion) replaced by quotes.
+- `~` (synonym search) gone.
 
 If you see an article recommending any of these, check the publish date.
 :::
@@ -254,38 +262,28 @@ A few real workflows where search operators save meaningful time:
 - **Competitive research.** `site:competitor.com filetype:pdf` occasionally surfaces whitepapers and pricing documents that are technically accessible but not prominently linked. Companies upload things to their servers and forget.
 - **Finding actual files.** `intitle:"template" filetype:docx contract remote` skips the listicle articles and finds downloadable files directly.
 
-## A Note on Ethical Use
-
-Search operators work on publicly indexed data. They filter and surface what Google has already crawled and made searchable — they're not a bypass for authentication or access controls.
-
-Use them for research, documentation hunting, content audits, and competitive analysis. Don't use them to probe for exposed credentials or configuration files belonging to others. The OSINT community calls targeted operator queries "dorks," and using them to access data you're not supposed to see is a different conversation entirely.
-
 ## FAQ
 
 <details><summary>Can I combine multiple operators in one query?</summary>
 Yes, and that's where precision comes from. Start with one or two, check results, then add more. Stacking too many at once can return zero results because the criteria conflict.
 </details>
 
-<details><summary>Is `filetype:` the same as `ext:`?</summary>
-In practice, yes. Both filter by file extension. `filetype:` is more commonly documented and recommended.
-</details>
-
-<details><summary>Why does `site:` show a weird number of results?</summary>
-Google's result count for `site:` queries is an estimate, not an exact count. It's often wrong. Use it to get a rough sense of scale, not a precise figure.
+<details><summary>Why does <code>site:</code> show a weird number of results?</summary>
+Google's result count for <code>site:</code> queries is an estimate, not an exact count. It's often wrong. Use it to get a rough sense of scale, not a precise figure.
 </details>
 
 <details><summary>Do operators work in Google Image Search?</summary>
-Some do. `site:` and `filetype:` work. `intitle:` in Image Search looks for the term in the image filename. Results are less consistent than in web search.
+Some do. <code>site:</code> and <code>filetype:</code> work. <code>intitle:</code> in Image Search looks for the term in the image filename. Results are less consistent than in web search.
 </details>
 
 <details><summary>Does Google's AI Overview affect operator results?</summary>
-AI Overviews appear above results but operator queries still filter the blue-link results below. The filtering behavior hasn't changed — though AI Overviews push those results further down the page.
+AI Overviews appear above results but operator queries still filter the blue-link results below. The filtering behavior hasn't changed, though AI Overviews push those results further down the page.
 </details>
 
 ## Conclusion
 
 Five operators handle most situations: `site:`, `filetype:`, `"quotes"`, `-`, and `OR`. Learn those and searches get a lot quieter. Add `intitle:`, `inurl:`, `before:`, and `after:` when you need another layer.
 
-The gap isn't knowing these exist — it's having them ready when a search is producing garbage. Two or three operators chained together lands you on the right result instead of page three.
+The gap isn't knowing these exist, it's having them ready when a search is producing garbage. Two or three operators chained together lands you on the right result instead of page three.
 
 Copy two or three templates from the table above, swap in your own topics, and try them today. You'll notice the difference immediately.
