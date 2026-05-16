@@ -52,6 +52,7 @@ A few things I've built outside of work
 
 - [Claude Code in Action](https://verify.skilljar.com/c/syjck5b3ggww)
 - [Claude 101](https://verify.skilljar.com/c/5wmy2ycs7atv)
+- [Claude code 101](https://verify.skilljar.com/c/nc77bs6zermo)
 - [Building with the Claude API](https://verify.skilljar.com/c/vvzuzv2zx3we)
 - [Introduction to Claude Cowork](https://verify.skilljar.com/c/ta36wresevm6)
 - [Introduction to agent skills](https://verify.skilljar.com/c/xttdqxy2esug)
@@ -80,6 +81,7 @@ A few things I've built outside of work
 - [AI Fluency for students](https://verify.skilljar.com/c/rmc2e5yvo5ri)
 - [AI Fluency for nonprofits](https://verify.skilljar.com/c/okwdac8hnvrb)
 - [AI Capabilities & Limitations](https://verify.skilljar.com/c/k3eghhvq9v3d)
+- [Al Fluency for Small Businesses](https://verify.skilljar.com/c/v5tvcwmy4hz8)
 
 </details>
 
