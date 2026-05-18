@@ -1,11 +1,11 @@
 ---
 title: Husky and Conventional Commits — How to use Git Hooks Without the Pain
-description: Set up Husky, commitlint, and Conventional Commits to enforce Git commit message standards automatically. Block bad commits before they reach the remote and keep your history readable.
+description: Set up Husky, commitlint, and Conventional Commits to enforce Git commit message standards automatically, block bad commits to push and keep your history readable.
 pubDatetime: 2026-05-17T10:00:00Z
 modDatetime: 2026-05-17T10:00:00Z
 author: Denis Iakimenko
 slug: husky-conventional-commits
-featured: false
+featured: true
 draft: false
 tags:
   - git
@@ -37,7 +37,7 @@ That history is useless. You can't search it, can't generate a changelog from it
 
 > Two npm packages and one Git hook file, and your team never writes a garbage commit message again.
 
-Git hooks exist to prevent exactly this. Write a script, Git runs it before the commit lands — and if the message doesn't pass, the commit doesn't happen. The problem is the setup. Hooks live in `.git/hooks`, which Git doesn't track. Every new clone starts from scratch. You document the setup, teammates ignore it, and two weeks later you're back to "wip."
+Git hooks exist to prevent exactly this, but knowing how to use them is only half the problem. Write a script, Git runs it before the commit lands and if the message doesn't pass, the commit doesn't happen. The real friction is the setup, and that's where most teams quietly give up. Hooks live in `.git/hooks`, which Git doesn't track. Every new clone starts from scratch. You document the setup, teammates ignore it, and two weeks later you're back to "wip."
 
 [Husky](https://typicode.github.io/husky) fixes the plumbing. Hooks become regular files in `.husky/`, committed to the repo, installed automatically on `npm install`. One setup, the whole team gets it.
 
@@ -51,7 +51,7 @@ The spec is simple. Every commit message follows this structure:
 <type>[optional scope]: <description>
 ```
 
-In practice:
+In practice that looks like this:
 
 ```bash
 feat: add user registration endpoint
@@ -191,7 +191,7 @@ Create `.husky/commit-msg`:
 npx --no -- commitlint --edit $1
 ```
 
-That's the whole file. Two parts:
+That's the whole file, and it has just two moving parts:
 
 - `npx --no` — runs the local package, no fallback install if missing
 - `commitlint --edit $1` — reads the commit message from the temp file Git passes as the first argument
@@ -226,13 +226,13 @@ git commit -m "stuff"
 husky - commit-msg script failed (code 1)
 ```
 
-Blocked. Now a valid one:
+Blocked — the commit never happened. Now try a valid one:
 
 ```bash
 git commit -m "feat: add husky configuration"
 ```
 
-Goes through. That's the whole flow working.
+That one goes through cleanly the full flow is working end to end.
 
 ## Customizing commitlint Rules
 
@@ -253,7 +253,7 @@ The default ruleset is strict. You can loosen or extend it:
 }
 ```
 
-Rule severity:
+Each rule accepts one of three severity levels:
 
 | Level | Meaning |
 |-------|---------|
@@ -261,7 +261,7 @@ Rule severity:
 | `1` | Warning — commit goes through |
 | `2` | Error — commit blocked |
 
-Rules worth adjusting early:
+A few rules are worth adjusting before you share this with the team:
 
 - **`subject-case`** — default enforces `lower-case` descriptions. Set to `[0]` if your team writes sentence case.
 - **`type-enum`** — add `wip` to allow work-in-progress commits locally without the hook blocking you.
@@ -301,7 +301,7 @@ fi
 Keep hooks fast. A `pre-commit` that takes 30 seconds will get disabled or bypassed within a week. Run only what's essential locally. Push everything heavy to CI.
 :::
 
-A reasonable split:
+Here's a reasonable split between what runs locally and what belongs in CI:
 
 | Hook | What to run |
 |------|-------------|
@@ -312,9 +312,9 @@ A reasonable split:
 
 ## Sharing Hooks With the Team
 
-This is the actual point of Husky.
+This is the actual reason Husky exists — not just to make hooks easier, but to make them sharable.
 
-Raw `.git/hooks` files aren't tracked by Git. They exist on your machine and nowhere else. Every new clone needs manual setup. Nobody does the manual setup. The hooks die.
+Raw `.git/hooks` files aren't tracked by Git. They exist on your machine and nowhere else, which means every new clone starts with no hooks at all. You document the setup, teammates ignore it, and the hooks quietly die.
 
 Husky moves hooks into `.husky/`, a normal directory that gets committed. When someone clones the repo and runs `npm install`, the `prepare` script fires:
 
@@ -326,10 +326,10 @@ Husky moves hooks into `.husky/`, a normal directory that gets committed. When s
 }
 ```
 
-Husky reads `.husky/` and installs everything into `.git/hooks` automatically. No documentation to read, no script to remember. Clone, install, hooks are there.
+Husky reads `.husky/` and installs everything into `.git/hooks` automatically. No documentation to read, no script to remember. Clone the repo, run `npm install`, and the hooks are already in place.
 
 :::info
-The `prepare` lifecycle script runs on every `npm install`, including fresh clones. New team members get the hooks without doing anything extra.
+The `prepare` lifecycle script runs on every `npm install`, including fresh clones. New team members get the hooks without pain and doing anything extra.
 :::
 
 ## Bypassing Hooks When You Need To
@@ -374,9 +374,7 @@ m1n2o3p docs: update setup instructions
 q4r5s6t feat: add dark mode toggle
 ```
 
-Readable. Searchable. Each line tells you what changed and where. Compare that to `updates`, `wip`, `FINAL FINAL` history at the top of this post.
-
-The first generates a changelog. The second generates a headache.
+Every line is readable and searchable it tells you exactly what changed and where to look. Compare that to `updates`, `wip`, `FINAL FINAL` history at the top of this post.
 
 ## FAQ
 
