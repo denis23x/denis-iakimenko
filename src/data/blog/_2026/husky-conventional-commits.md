@@ -16,7 +16,6 @@ tags:
   - productivity
   - devops
   - automation
-  - dx
 ---
 
 ## Table of contents
@@ -44,7 +43,7 @@ The real friction is the setup, and that's where most teams quietly give up. Hoo
 
 [Husky](https://www.npmjs.com/package/husky) fixes the plumbing. Hooks become regular files in `.husky/`, committed to the repo, installed automatically on `npm i`. One setup, the whole team gets it.
 
-This guide wires Husky to **Conventional Commits** via [@commitlint/cli](https://www.npmjs.com/package/@commitlint/cli) and [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional) — so bad messages get blocked at the moment of commit.
+This guide wires Husky to **Conventional Commits** via [@commitlint/cli](https://www.npmjs.com/package/@commitlint/cli) and [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional) so bad messages get blocked at the moment of commit.
 
 ## Conventional Commits
 
@@ -140,7 +139,7 @@ flowchart TD
 npm i @commitlint/cli @commitlint/config-conventional --save-dev
 ```
 
-`@commitlint/cli` validates and `@commitlint/config-conventional` is the ruleset — it implements the full Conventional Commits spec. You don't have to use it, but it's the right default for almost every project.
+`@commitlint/cli` validates and `@commitlint/config-conventional` is the ruleset, it implements the full Conventional Commits spec. You don't have to use it, but it's the right default for almost every project.
 
 Create `.commitlintrc` in your project root:
 
@@ -186,7 +185,7 @@ No output. Exit code 0. It's working.
 npx husky init
 ```
 
-This creates a `.husky/` directory and adds a `prepare` script to `package.json` that reinstalls hooks on every `npm i`. You'll find a `.husky/pre-commit` file with placeholder content — that's confirmation it worked. Replace it with something harmless for now:
+This creates a `.husky/` directory and adds a `prepare` script to `package.json` that reinstalls hooks on every `npm i`. You'll find a `.husky/pre-commit` file with placeholder content, that's confirmation it worked. Replace it with something harmless for now:
 
 ```bash file=.husky/pre-commit
 echo "pre-commit hook"
@@ -323,13 +322,15 @@ if [[ "$branch" == "main" ]]; then
 fi
 ```
 
+---
+
 :::warn
 Keep hooks fast. A `pre-commit` that takes 30 seconds will get disabled or bypassed within a week. Run only what's essential locally and push everything heavy to CI.
 :::
 
 ## Sharing Hooks With the Team
 
-This is the actual reason Husky exists — not just to make hooks easier, but to make them sharable.
+This is the actual reason Husky exists, not just to make hooks easier, but to make them sharable.
 
 Raw `.git/hooks` files aren't tracked by Git. They exist on your machine and nowhere else, which means every new clone starts with no hooks at all. You document the setup, teammates ignore it, and the hooks quietly die.
 
@@ -346,12 +347,12 @@ Husky moves hooks into `.husky/`, a normal directory that gets committed. When s
 Husky reads `.husky/` and installs everything into `.git/hooks` automatically. No documentation to read, no script to remember. Clone the repo, run `npm i`, and the hooks are already in place.
 
 :::info
-The `prepare` lifecycle script runs on every `npm i`, including fresh clones. New team members get the hooks without pain and doing anything extra.
+The `prepare` lifecycle script runs on every `npm i` including fresh clones. New team members get the hooks without pain and doing anything extra.
 :::
 
 ## Bypassing Hooks When You Need To
 
-Sometimes you need to skip them — emergency hotfixes, fixup commits before an interactive rebase, committing generated files.
+Sometimes you need to skip them: emergency hotfixes, fixup commits before an interactive rebase, committing generated files.
 
 ```bash
 git commit --no-verify -m "chore: generated file update"
@@ -360,13 +361,13 @@ git commit --no-verify -m "chore: generated file update"
 `--no-verify` skips both `pre-commit` and `commit-msg`. Use it deliberately, not as a reflex.
 
 :::warn
-If `--no-verify` shows up regularly in your team's workflow, the hooks are too strict or too slow. Fix the hooks — don't normalize bypassing them.
+If `--no-verify` shows up regularly in your team's workflow, the hooks are too strict or too slow. Fix the hooks, don't normalize bypassing them.
 :::
 
 ## Project Structure After Setup
 
 ```
-your-project/
+project/
 ├── .husky/
 │   ├── commit-msg       ← runs commitlint
 │   └── pre-commit       ← optional: linting, etc.
@@ -375,15 +376,13 @@ your-project/
 └── ...
 ```
 
-`.husky/` and `.commitlintrc` belong in version control — that's the whole point. Commit both. That's what makes this work for everyone, not just you.
+`.husky/` and `.commitlintrc` belong in version control, that's the whole point so commit both. That's what makes this work for everyone, not just you.
 
 ## What You Actually Get
 
-A month of enforced Conventional Commits looks like this:
+In a month of enforced Conventional Commits your history will looks like this, simply run `git log --oneline`
 
 ```bash
-git log --oneline
-
 a1b2c3d feat(auth): add OAuth2 integration
 e4f5g6h fix(api): handle empty response body
 i7j8k9l refactor: extract validation helpers
@@ -396,11 +395,11 @@ Every line is readable and searchable it tells you exactly what changed and wher
 ## FAQ
 
 <details><summary>Does this work with non-npm projects?</summary>
-Husky needs Node.js for installation, but the hooks themselves are plain shell scripts. If your project uses another language, you can install Husky as a dev dependency just for tooling. Alternatively, <a href="https://pre-commit.com">pre-commit</a> (Python ecosystem) or <a href="https://github.com/evilmartians/lefthook">Lefthook</a> (language-agnostic) cover the same ground.
+Husky needs Node.js for installation, but the hooks themselves are plain shell scripts. If your project uses another language, you can install Husky as a dev dependency just for tooling. Alternatively, <a href="https://pre-commit.com" target="_blank" rel="nofollow noopener">pre-commit</a> (Python ecosystem) or <a href="https://github.com/evilmartians/lefthook" target="_blank" rel="nofollow noopener">Lefthook</a> (language-agnostic) cover the same ground.
 </details>
 
 <details><summary>What if someone doesn't have Node installed?</summary>
-The <code>prepare</code> script fails silently — nothing breaks. Non-Node contributors just won't have the hooks locally. CI is your safety net for that case.
+The <code>prepare</code> script fails silently and nothing breaks. Non-Node contributors just won't have the hooks locally. CI is your safety net for that case.
 </details>
 
 <details><summary>Does this work with pnpm or yarn?</summary>
@@ -408,17 +407,11 @@ Yes. The setup is identical. Replace <code>npm install</code> with your package 
 </details>
 
 <details><summary>How do merge commits get handled?</summary>
-Merge commits generated by Git — like <code>Merge branch 'feature' into 'main'</code> — don't match the Conventional Commits format. commitlint detects they're machine-generated and skips validation automatically.
-</details>
-
-<details><summary>Should I enforce this in CI too?</summary>
-Yes. <code>--no-verify</code> exists, so local hooks aren't airtight. Add a CI step that runs commitlint against the PR's commits. Local hooks give fast feedback. CI gives actual enforcement.
+Merge commits generated by Git like <strong>Merge branch 'feature' into 'main'</strong> don't match the Conventional Commits format. commitlint detects they're machine-generated and skips validation automatically.
 </details>
 
 ## Conclusion
 
-Git hooks have been there the whole time. The friction was never the feature — it was the setup. Files that don't get committed, scripts copied manually, teammates who never ran the setup because it wasn't `npm i`.
+Git hooks were always here. The problem was everything around them: untracked files, manually copied scripts, teammates skipping setup because it wasn’t a part of `npm i`.
 
-Husky removes all of that. Two packages, one config file, one hook. Commit the `.husky/` folder, and the whole team has the same rules from day one.
-
-Set it up once. Stop thinking about it. Start reading your `git log` without closing the terminal in frustration.
+Husky removes all of that with only a few packages, one config file, couple hooks. Commit the `.husky/` folder, and the whole team has the same rules from day one.
