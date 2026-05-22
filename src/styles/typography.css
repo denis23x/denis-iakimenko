@@ -31,7 +31,7 @@
     a {
       @apply wrap-break-word text-foreground decoration-solid underline-offset-4 focus-visible:no-underline;
 
-      &:not([href^="#"]) {
+      &:not([href^="#"]):not(:has(img)) {
         @apply text-accent;
 
         &::after {
