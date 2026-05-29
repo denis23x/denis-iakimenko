@@ -1,6 +1,6 @@
 ---
 title: Frontend Security in 2026 — XSS, Middleware Bypasses, and What Actually Gets You Hacked
-description: A deep guide to modern frontend security vulnerabilities — from classic XSS and CSRF to Next.js middleware bypasses, Server Action exposure, and supply chain attacks. With real CVEs, working code, and fixes you can ship today.
+description: A deep guide to frontend security vulnerabilities — XSS, CSRF, and the Next.js middleware bypass (CVE-2025-29927). Real code and fixes you can ship today.
 pubDatetime: 2026-05-29T20:00:00Z
 modDatetime: 2026-05-29T20:00:00Z
 author: Denis Iakimenko
@@ -17,18 +17,16 @@ tags:
   - cve
   - csp
   - web-security
-  - javascript
+  - server-actions
 ---
 
 ## Table of contents
 
 ## Introduction
 
-Most security content is written for backend engineers. It talks about SQL injection, server misconfigurations, and authentication flows. Frontend gets a paragraph at the end about input sanitization, and that's it.
+Most security content is written for backend engineers, it talks about SQL injection, server misconfigurations, and authentication flows. Frontend gets a paragraph at the end about input sanitization, and that's it. That used to be fine, the frontend was dumb — it rendered HTML, maybe ran some jQuery and the serious logic lived elsewhere.
 
-That used to be fine. The frontend was dumb — it rendered HTML, maybe ran some jQuery. The serious logic lived elsewhere.
-
-That's not what frontend means anymore. In 2026, React apps handle authentication, session management, business logic, and direct database access through Server Actions. The attack surface is not smaller than the backend. In some ways it's bigger, because it's public-facing by definition and the security habits built up around it are still catching up.
+That's not what frontend means anymore. In 2026, frontend security is a first-class concern: React apps handle authentication, session management, business logic, and direct database access through Server Actions. The attack surface is not smaller than the backend. In some ways it's bigger, because it's public-facing by definition and the security habit's built up around it are still catching up.
 
 This guide covers what actually gets frontend apps compromised — the old stuff that still works, and the new class of vulnerabilities that showed up the moment frameworks started owning both the client and the server.
 
@@ -38,20 +36,20 @@ Let's not skip the classics. They're classic because they keep working.
 
 ### XSS — Cross-Site Scripting
 
-XSS happens when user input gets rendered as code instead of text. The browser can't tell the difference between your script and an attacker's — it just runs whatever shows up.
+XSS happens when user input gets rendered as code instead of text. The browser can't tell the difference between your script and an attacker's and it just runs whatever shows up.
 
 React's JSX escapes output by default, which catches the most obvious cases. The footgun is `dangerouslySetInnerHTML`:
 
 ```tsx file=BadComponent.tsx
-// ❌ This will execute whatever userInput contains
+// This will execute whatever user input contains
 function Comment({ content }: { content: string }) {
   return <div dangerouslySetInnerHTML={{ __html: content }} />;
 }
 ```
 
-If `content` comes from user input — even through multiple layers — and you don't sanitize it first, you have XSS. Full stop.
+If `content` comes from user input even through multiple layers and you don't sanitize it first, you have XSS.
 
-The fix is DOMPurify, which strips dangerous tags before they hit the DOM:
+The fix is [DOMPurify](https://www.npmjs.com/package/dompurify) which strips dangerous tags before they hit the DOM:
 
 ```tsx file=SafeComment.tsx
 import DOMPurify from "dompurify";
@@ -63,7 +61,9 @@ function Comment({ content }: { content: string }) {
 ```
 
 :::warn
-`dangerouslySetInnerHTML` without sanitization is the most common XSS vector in React apps. It comes up in markdown renderers, rich text editors, user-generated content, and email templates. If you're using it anywhere, audit it.
+`dangerouslySetInnerHTML` without sanitization is the most common XSS vector in React apps. It comes up in markdown renderers, rich text editors, user-generated content, and email templates. 
+
+If you're using it anywhere, audit it.
 :::
 
 Beyond React, XSS can still sneak in through:
@@ -84,12 +84,10 @@ export async function POST(req: Request) {
   const origin = req.headers.get("origin");
   const host = req.headers.get("host");
 
-  // ❌ Skipping this check means CSRF is possible
+  // Skipping this check means CSRF is possible
   if (!origin || !origin.includes(host ?? "")) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  // proceed with state mutation
 }
 ```
 
@@ -107,25 +105,23 @@ cookieStore.set("session", token, {
 
 `SameSite=Lax` is the minimum. `Strict` is better for admin tools.
 
-### The `localStorage` Token Problem
+### The localStorage Token Problem
 
-A lot of tutorials still tell you to store JWTs in `localStorage`. The reasoning is usually "it's simpler." The problem is that any XSS on your domain — yours, a CDN's, a third-party widget's — can read `localStorage` and steal the token.
+A lot of tutorials still tell you to store JWTs in `localStorage`. The reasoning is usually "it's simpler." The problem is that any XSS on your domain — yours, a CDN's, a third-party widget's can read `localStorage` and steal the token.
 
 `httpOnly` cookies aren't accessible to JavaScript at all. That's the whole point. An attacker with XSS execution can't steal what they can't read.
 
-| Storage | XSS accessible | CSRF risk | Verdict |
-|---|---|---|---|
-| `localStorage` | Yes | No | Avoid for auth tokens |
-| `sessionStorage` | Yes | No | Avoid for auth tokens |
-| `httpOnly` cookie | No | Yes (mitigated by SameSite) | Prefer this |
-
----
+| Storage          | XSS accessible   | CSRF risk      | Verdict        |
+|------------------|------------------|----------------|----------------|
+| `localStorage`   | Yes | No                          | Avoid for auth |
+| `sessionStorage` | Yes | No                          | Avoid for auth |
+| `httpOnly`       | No  | Yes (mitigated by SameSite) | Prefer this    |
 
 ## The New Stuff — What Changed When Frameworks Got Server-Side
 
 This is where things get genuinely interesting, and where most teams are flying blind.
 
-### CVE-2025-29927 — The Next.js Middleware Bypass
+### CVE-2025-29927 — The Next.js Middleware Bypass Vulnerability
 
 In March 2025, a CVSS 9.1 vulnerability was disclosed in Next.js. The attack was embarrassingly simple: add one header to any request and every middleware check disappears.
 
@@ -134,53 +130,41 @@ curl -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:mi
   https://your-app.com/dashboard
 ```
 
-The dashboard loads. No authentication. No redirect. Nothing.
+The dashboard loads without authentication. No redirect. Nothing.
 
-The root cause: Next.js used an internal header to prevent middleware from calling itself in infinite loops. By including that header in a request, an attacker convinced the framework the middleware had already run. The fix was in versions 12.3.5, 13.5.9, 14.2.25, and 15.2.3.
+The root cause: Next.js used an internal header to prevent middleware from calling it'self in infinite loops. By including that header in a request, an attacker convinced the framework the middleware had already run. The fix was in versions 12.3.5, 13.5.9, 14.2.25, and 15.2.3.
 
-The deeper lesson is architectural. Middleware is not a security boundary:
+[Postmortem on Next.js Middleware bypass](https://vercel.com/blog/postmortem-on-next-js-middleware-bypass)
 
-```mermaid caption=Middleware is routing, not security
-flowchart TD
-    A[Request] --> B[Middleware]
-    B -->|Unauthenticated| C[Redirect to /login]
-    B -->|Authenticated| D[Route Handler / Server Action]
-    D --> E{Auth check again?}
-    E -->|❌ No — trusts middleware| F[Vulnerable]
-    E -->|✅ Yes — validates session| G[Secure]
-```
+If someone bypasses your middleware by CVE, misconfiguration, or future bug and every route just trusts that auth has already happened, your entire application is open.
 
-If someone bypasses your middleware — by CVE, misconfiguration, or future bug — and every route just trusts that auth has already happened, your entire application is open.
-
-The rule: **authenticate in every Route Handler and Server Action, regardless of what middleware did**:
+The rule: authenticate in every Route Handler and Server Action, regardless of what middleware did:
 
 ```ts file=app/api/account/route.ts
 import { getSession } from "@/lib/session";
 
 export async function POST(req: Request) {
-  // ✅ Always validate here, even though middleware already checked
+  // Always validate here, even though middleware already checked
   const session = await getSession();
 
   if (!session?.userId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  // proceed
 }
 ```
 
-Think of middleware as the front door of a building — it checks IDs as a first pass, but every room inside still needs its own lock.
+Think of middleware as the front door of a building — it checks IDs as a first pass, but every room inside still needs it's own lock.
 
 ### Server Actions — The New Attack Surface
 
-Server Actions are convenient. You call a function from your React component and server-side logic runs. No API route to write. No fetch to configure.
+Server Actions are convenient. You call a function from your React component and server-side logic runs. No API route to write and no fetch to configure.
 
-They also bypass the boundary that kept client-side and server-side code separate. A Server Action is just a POST endpoint — any POST endpoint. The input you receive isn't validated by TypeScript. It's whatever the caller sends:
+A Server Action is effectively just a POST endpoint, and it's input is not enforced or validated by TypeScript — it can contain anything the caller provides:
 
 ```ts file=actions/updateProfile.ts
 "use server";
 
-// ❌ Trusts that formData is what you expect
+// Trusts that formData is what you expect
 export async function updateProfile(formData: FormData) {
   const userId = formData.get("userId");
   const role = formData.get("role"); // an attacker can send "admin" here
@@ -198,8 +182,7 @@ import { z } from "zod";
 import { getSession } from "@/lib/session";
 
 const schema = z.object({
-  displayName: z.string().min(1).max(100),
-  bio: z.string().max(500).optional(),
+  role: z.enum(['user', '...']).optional(),
 });
 
 export async function updateProfile(formData: FormData) {
@@ -211,18 +194,15 @@ export async function updateProfile(formData: FormData) {
 
   // Validate and type the input
   const parsed = schema.safeParse({
-    displayName: formData.get("displayName"),
-    bio: formData.get("bio"),
+    role: formData.get("role"),
   });
 
   if (!parsed.success) {
     throw new Error("Invalid input");
   }
 
-  await db.users.update({
-    where: { id: session.userId }, // use session, not user-supplied id
-    data: parsed.data,
-  });
+  // Use session, not user-supplied id
+  await db.users.update({ where: { id: session.userId }, data: parsed.data });
 }
 ```
 
@@ -237,10 +217,10 @@ When React Server Components serialize data to pass to the client, the serializa
 The fix: never put secrets inside Server Actions or components. Secrets belong in environment variables that are never sent to the client:
 
 ```ts
-// ❌ Hardcoded inside a component or action
+// Hardcoded inside a component or action
 const client = new SomeClient({ apiKey: "sk-prod-abc123" });
 
-// ✅ From environment, server-only
+// From environment, server-only
 const client = new SomeClient({ apiKey: process.env.SOME_SECRET_KEY });
 ```
 
@@ -324,7 +304,9 @@ If the CDN serves a modified file, the browser refuses to run it.
 
 **Prefer fewer dependencies.** Every package you don't install is a package that can't be compromised.
 
----
+:::info
+The same CVE-surface thinking applies to your container base image — see [Docker Base Images](/blog/docker-base-image-types).
+:::
 
 ## Security Headers Checklist
 
@@ -351,7 +333,7 @@ Before shipping, run through these. If the answer to any of them is "I'm not sur
 1. Is dangerouslySetInnerHTML used anywhere? Is it sanitized with DOMPurify?
 1. Are auth tokens in httpOnly cookies, not localStorage?
 1. Does every Server Action validate the session independently?
-1. Does every Server Action validate and type its inputs with a schema?
+1. Does every Server Action validate and type it's inputs with a schema?
 1. Is Next.js up to date? (Check: https://github.com/vercel/next.js/releases)
 1. Are user-supplied IDs used for resource lookups, or session IDs?
 1. Is CSP configured?
