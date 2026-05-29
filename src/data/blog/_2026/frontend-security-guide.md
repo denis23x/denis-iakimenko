@@ -1,8 +1,8 @@
 ---
 title: Frontend Security in 2026 — XSS, Middleware Bypasses, and What Actually Gets You Hacked
 description: A deep guide to frontend security vulnerabilities — XSS, CSRF, and the Next.js middleware bypass (CVE-2025-29927). Real code and fixes you can ship today.
-pubDatetime: 2026-05-29T20:00:00Z
-modDatetime: 2026-05-29T20:00:00Z
+pubDatetime: 2026-05-29T10:00:00Z
+modDatetime: 2026-05-29T10:00:00Z
 author: Denis Iakimenko
 slug: frontend-security-guide
 featured: true

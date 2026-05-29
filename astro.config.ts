@@ -156,6 +156,7 @@ export default defineConfig({
             },
           ],
         },
+        dark: "github-dark-default"
       },
       defaultColor: false,
       wrap: false,
