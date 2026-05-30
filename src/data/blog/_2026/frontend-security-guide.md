@@ -28,7 +28,7 @@ Most security content is written for backend engineers, it talks about SQL injec
 
 That's not what frontend means anymore. In 2026, frontend security is a first-class concern: React apps handle authentication, session management, business logic, and direct database access through Server Actions. The attack surface is not smaller than the backend. In some ways it's bigger, because it's public-facing by definition and the security habit's built up around it are still catching up.
 
-This guide covers what actually gets frontend apps compromised — the old stuff that still works, and the new class of vulnerabilities that showed up the moment frameworks started owning both the client and the server.
+This guide covers what actually gets frontend apps hacked — the old stuff that still works, and the new class of vulnerabilities that showed up the moment frameworks started owning both the client and the server.
 
 ## The Old Stuff That Still Works
 
@@ -340,15 +340,11 @@ Before shipping, run through these. If the answer to any of them is "I'm not sur
 ## FAQ
 
 <details><summary>Is React safe against XSS by default?</summary>
-Mostly yes, for JSX rendered content. React escapes HTML entities automatically. The exceptions are <code>dangerouslySetInnerHTML</code>, direct DOM manipulation via <code>useRef</code>, and libraries that inject raw HTML. Those need explicit sanitization.
+Mostly yes, for JSX rendered content. React escapes HTML entities automatically. The exceptions are <code>dangerouslySetInnerHTML</code>, direct DOM manipulation via <code>useRef</code> and libraries that inject raw HTML. Those need explicit sanitization.
 </details>
 
 <details><summary>Do Server Actions need CSRF protection?</summary>
 Next.js Server Actions check the <code>Origin</code> header automatically. Traditional API Routes don't. If you're mixing both, add origin checks to your Route Handlers for any state-mutating endpoints, and set <code>SameSite=Lax</code> on session cookies.
-</details>
-
-<details><summary>Is Vercel hosting safer than self-hosting Next.js?</summary>
-For some things, yes. CVE-2025-29927 was patched in Vercel's infrastructure before public disclosure. Self-hosted deployments were exposed until the patch was applied manually. That's a meaningful difference if your team is slow to apply updates.
 </details>
 
 <details><summary>What's the fastest way to check if my Next.js is vulnerable?</summary>
@@ -361,6 +357,4 @@ The model has changed and frontend is no longer a thin layer on top of an API �
 
 Most of it isn't complicated: validate inputs, authenticate in every handler, keep dependencies updated, set the headers, use `httpOnly` cookies and don't put secrets in components.
 
-These checks aren't part of most teams' default workflow, so they get skipped under deadline pressure and stay skipped. Getting CVE-2025-29927 was embarrassing for Next.js. Getting compromised through middleware you forgot to audit is worse.
-
-Start with the checklist above. One item at a time.
+These checks aren't part of most teams' default workflow, so they get skipped under deadline pressure and stay skipped. Getting CVE-2025-29927 was embarrassing for Next.js. Getting hacked through middleware you forgot to audit is worse. Stay safe.
