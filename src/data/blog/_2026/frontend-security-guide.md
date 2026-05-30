@@ -1,5 +1,5 @@
 ---
-title: Frontend Security in 2026 — XSS, Middleware Bypasses, and What Actually Gets You Hacked
+title: Frontend Security — XSS, CSRF, Middleware Bypasses, and What Actually Gets You Hacked
 description: A deep guide to frontend security vulnerabilities — XSS, CSRF, and the Next.js middleware bypass (CVE-2025-29927). Real code and fixes you can ship today.
 pubDatetime: 2026-05-29T10:00:00Z
 modDatetime: 2026-05-29T10:00:00Z
@@ -212,7 +212,7 @@ Never use a user-supplied ID to identify who owns a resource. Pull the authentic
 
 ### React Server Components — Source Code Leakage
 
-When React Server Components serialize data to pass to the client, the serialization includes the function arguments and return values. In late 2025, CVE-2025-55183 demonstrated that malformed requests could cause Server Functions to return their own source code — including any hardcoded secrets, internal URLs, or helper functions inlined by the bundler.
+When React Server Components serialize data to pass to the client, the serialization includes the function arguments and return values. In late 2025, CVE-2025-55183 demonstrated that malformed requests could cause Server Functions to return their own source code including any hardcoded secrets, internal URLs, or helper functions inlined by the bundler.
 
 The fix: never put secrets inside Server Actions or components. Secrets belong in environment variables that are never sent to the client:
 
@@ -221,7 +221,7 @@ The fix: never put secrets inside Server Actions or components. Secrets belong i
 const client = new SomeClient({ apiKey: "sk-prod-abc123" });
 
 // From environment, server-only
-const client = new SomeClient({ apiKey: process.env.SOME_SECRET_KEY });
+const client = new SomeClient({ apiKey: process.env.SECRET });
 ```
 
 In Next.js, prefix variables with `NEXT_PUBLIC_` only if they genuinely need to be on the client. Anything without that prefix stays server-side. Use the `server-only` package to enforce this:
@@ -229,8 +229,6 @@ In Next.js, prefix variables with `NEXT_PUBLIC_` only if they genuinely need to 
 ```ts file=lib/db.ts
 import "server-only"; // throws at build time if imported on client
 ```
-
----
 
 ## Content Security Policy — Your Last Line of Defense
 
@@ -265,25 +263,25 @@ export function middleware(request: NextRequest) {
 `frame-ancestors 'none'` replaces the old `X-Frame-Options: DENY` header and blocks your app from being embedded in an iframe — the primary vector for clickjacking attacks.
 :::
 
-A strict CSP with nonces is more work to set up than `unsafe-inline` but it actually blocks script injection. `unsafe-inline` defeats the purpose — if you allow all inline scripts, XSS works fine.
-
----
+A strict CSP with nonces is more work to set up than `unsafe-inline` but it actually blocks script injection. `unsafe-inline` defeats the purpose if you allow all inline scripts, XSS works fine.
 
 ## Supply Chain Attacks — The Problem You're Probably Not Thinking About
 
-Modern frontend projects pull in hundreds of packages. You don't audit them all. You probably don't audit any of them. That's the attack surface.
+Modern frontend projects pull in hundreds of packages and you don't audit them all. That's the attack surface.
 
 The event-stream incident (2018) was the first widely-noticed case where a malicious maintainer shipped backdoored code to millions of projects via a dependency. It wasn't the last. In 2025 and 2026 the pattern keeps repeating, typically through:
 
 - Package maintainer account takeover
-- Typosquatting (`react-dom` vs `react-dом` using a Cyrillic `о`)
+- Typosquatting (`react-dom` vs `react-dоm` using a Cyrillic `о`)
 - Dependency confusion (private packages resolved from public registry)
 
 A few things reduce the risk:
 
-**Lock your lockfile.** `package-lock.json` or `pnpm-lock.yaml` pins exact versions. Don't run `npm install` in CI without `--frozen-lockfile`.
+**Lock your lockfile.**\
+`package-lock.json` or `pnpm-lock.yaml` pins exact versions and don't run `npm install` in CI without `--frozen-lockfile`.
 
-**Enable Subresource Integrity for CDN scripts.** If you're loading anything from a CDN:
+**Enable Subresource Integrity for CDN scripts.**\
+If you're loading anything from a CDN:
 
 ```html
 <script
@@ -295,17 +293,19 @@ A few things reduce the risk:
 
 If the CDN serves a modified file, the browser refuses to run it.
 
-**Run `npm audit` in CI.** Not perfect — it misses unknown vulnerabilities — but it catches the known ones:
+**Run `npm audit` in CI.**\
+Not perfect, it misses unknown vulnerabilities but it catches the known ones:
 
 ```yaml file=.github/workflows/security.yml
 - name: Audit dependencies
   run: npm audit --audit-level=high
 ```
 
-**Prefer fewer dependencies.** Every package you don't install is a package that can't be compromised.
+**Prefer fewer dependencies.**\
+Every package you don't install is a package that can't be compromised.
 
 :::info
-The same CVE-surface thinking applies to your container base image — see [Docker Base Images](/blog/docker-base-image-types).
+The same CVE-surface thinking applies to your container base image — see [Docker Base Images](/blog/docker-base-image-types)
 :::
 
 ## Security Headers Checklist
@@ -324,24 +324,18 @@ const securityHeaders = [
 
 HSTS (`Strict-Transport-Security`) tells browsers to only connect over HTTPS, even if the user types `http://`. The `preload` flag gets you into browser preload lists, which hardcodes this for first-time visitors.
 
----
-
 ## Quick-Check: The Questions Worth Asking Your Codebase
 
 Before shipping, run through these. If the answer to any of them is "I'm not sure," that's the one to check first:
 
-1. Is dangerouslySetInnerHTML used anywhere? Is it sanitized with DOMPurify?
-1. Are auth tokens in httpOnly cookies, not localStorage?
+1. Is `dangerouslySetInnerHTML` used anywhere? Is it sanitized with DOMPurify?
 1. Does every Server Action validate the session independently?
 1. Does every Server Action validate and type it's inputs with a schema?
-1. Is Next.js up to date? (Check: https://github.com/vercel/next.js/releases)
 1. Are user-supplied IDs used for resource lookups, or session IDs?
 1. Is CSP configured?
 1. Is npm audit running in CI?
 1. Are there any hardcoded secrets in Server Actions or components?
 1. Are cookies set with httpOnly, Secure, and SameSite?
-
----
 
 ## FAQ
 
@@ -363,10 +357,10 @@ Check your version in <code>package.json</code>. If it's below 15.2.3 (15.x bran
 
 ## Conclusion
 
-The model has changed. Frontend is no longer a thin layer on top of an API — it owns session management, data access, and business logic. That means it needs to be secured like a backend.
+The model has changed and frontend is no longer a thin layer on top of an API — it owns session management, data access, and business logic. That means it needs to be secured like a backend.
 
-Most of it isn't complicated. Validate inputs. Authenticate in every handler. Keep dependencies updated. Set the headers. Use `httpOnly` cookies. Don't put secrets in components.
+Most of it isn't complicated: validate inputs, authenticate in every handler, keep dependencies updated, set the headers, use `httpOnly` cookies and don't put secrets in components.
 
-The gap isn't knowledge — it's habit. These checks aren't part of most teams' default workflow, so they get skipped under deadline pressure and stay skipped. Getting CVE-2025-29927 was embarrassing for Next.js. Getting compromised through middleware you forgot to audit is worse.
+These checks aren't part of most teams' default workflow, so they get skipped under deadline pressure and stay skipped. Getting CVE-2025-29927 was embarrassing for Next.js. Getting compromised through middleware you forgot to audit is worse.
 
 Start with the checklist above. One item at a time.
