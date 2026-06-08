@@ -1,10 +1,10 @@
 ---
-title: Frontend Security — XSS, CSRF, Middleware Bypasses, and What Actually Gets You Hacked
-description: A deep guide to frontend security vulnerabilities — XSS, CSRF, and the Next.js middleware bypass (CVE-2025-29927). Real code and fixes you can ship today.
+title: Frontend Security - XSS, CSRF, Middleware Bypasses, and What Actually Gets You Hacked
+description: Frontend security for React and Next.js apps. Covers XSS, CSRF, CVE-2025-29927, Server Actions, and CSP with working code and fixes.
 pubDatetime: 2026-05-29T10:00:00Z
-modDatetime: 2026-05-29T10:00:00Z
+modDatetime: 2026-06-08T10:00:00Z
 author: Denis Iakimenko
-slug: frontend-security-guide
+slug: frontend-security
 featured: true
 draft: false
 tags:
@@ -24,17 +24,15 @@ tags:
 
 ## Introduction
 
-Most security content is written for backend engineers, it talks about SQL injection, server misconfigurations, and authentication flows. Frontend gets a paragraph at the end about input sanitization, and that's it. That used to be fine, the frontend was dumb — it rendered HTML, maybe ran some jQuery and the serious logic lived elsewhere.
+Most security content is written for backend engineers: SQL injection, server misconfigurations, authentication flows. Frontend gets a paragraph about input sanitization at the end. That used to make sense when the frontend was dumb, rendering HTML, maybe running some jQuery while the serious logic lived elsewhere.
 
-That's not what frontend means anymore. In 2026, frontend security is a first-class concern: React apps handle authentication, session management, business logic, and direct database access through Server Actions. The attack surface is not smaller than the backend. In some ways it's bigger, because it's public-facing by definition and the security habit's built up around it are still catching up.
+In 2026, that's not the case. React apps handle authentication, session management, business logic, and direct database access through Server Actions. The attack surface isn't smaller than the backend. In some ways it's bigger, because it's public-facing by definition and the security habits built up around it are still catching up.
 
-This guide covers what actually gets frontend apps hacked — the old stuff that still works, and the new class of vulnerabilities that showed up the moment frameworks started owning both the client and the server.
+This post covers what actually gets frontend apps hacked: the old stuff that still works, and the new class of vulnerabilities that showed up the moment frameworks started owning both the client and the server.
 
-## The Old Stuff That Still Works
+## The old stuff that still works
 
-Let's not skip the classics. They're classic because they keep working.
-
-### XSS — Cross-Site Scripting
+### XSS: cross-site scripting
 
 XSS happens when user input gets rendered as code instead of text. The browser can't tell the difference between your script and an attacker's and it just runs whatever shows up.
 
@@ -61,7 +59,7 @@ function Comment({ content }: { content: string }) {
 ```
 
 :::warn
-`dangerouslySetInnerHTML` without sanitization is the most common XSS vector in React apps. It comes up in markdown renderers, rich text editors, user-generated content, and email templates. 
+`dangerouslySetInnerHTML` without sanitization is the most common XSS vector in React apps. It comes up in markdown renderers, rich text editors, user-generated content, and email templates.
 
 If you're using it anywhere, audit it.
 :::
@@ -73,11 +71,11 @@ Beyond React, XSS can still sneak in through:
 - URL parameters rendered without encoding
 - Third-party widgets that inject script tags
 
-### CSRF — Cross-Site Request Forgery
+### CSRF: cross-site request forgery
 
 CSRF tricks a logged-in user's browser into making a state-changing request on your behalf. If your cookies are `SameSite=None` or if you're not checking origins, a malicious page can POST to your API as if it were the user.
 
-Next.js Server Actions protect against this automatically — they compare the `Origin` header against the `Host` header and reject mismatches. But if you're still using custom API Routes that modify state, you need to handle this yourself:
+Next.js Server Actions protect against this automatically. They compare the `Origin` header against the `Host` header and reject mismatches. But if you're still using custom API Routes that modify state, you need to handle this yourself:
 
 ```ts file=api/transfer/route.ts
 export async function POST(req: Request) {
@@ -105,9 +103,9 @@ cookieStore.set("session", token, {
 
 `SameSite=Lax` is the minimum. `Strict` is better for admin tools.
 
-### The localStorage Token Problem
+### The localStorage token problem
 
-A lot of tutorials still tell you to store JWTs in `localStorage`. The reasoning is usually "it's simpler." The problem is that any XSS on your domain — yours, a CDN's, a third-party widget's can read `localStorage` and steal the token.
+A lot of tutorials still tell you to store JWTs in `localStorage`. The reasoning is usually "it's simpler." The problem is that any XSS on your domain (yours, a CDN's, a third-party widget's) can read `localStorage` and steal the token.
 
 `httpOnly` cookies aren't accessible to JavaScript at all. That's the whole point. An attacker with XSS execution can't steal what they can't read.
 
@@ -117,11 +115,9 @@ A lot of tutorials still tell you to store JWTs in `localStorage`. The reasoning
 | `sessionStorage` | Yes | No                          | Avoid for auth |
 | `httpOnly`       | No  | Yes (mitigated by SameSite) | Prefer this    |
 
-## The New Stuff — What Changed When Frameworks Got Server-Side
+## The new stuff: what changed when frameworks got server-side
 
-This is where things get genuinely interesting, and where most teams are flying blind.
-
-### CVE-2025-29927 — The Next.js Middleware Bypass Vulnerability
+### CVE-2025-29927: the Next.js middleware bypass
 
 In March 2025, a CVSS 9.1 vulnerability was disclosed in Next.js. The attack was embarrassingly simple: add one header to any request and every middleware check disappears.
 
@@ -130,9 +126,9 @@ curl -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:mi
   https://your-app.com/dashboard
 ```
 
-The dashboard loads without authentication. No redirect. Nothing.
+The dashboard loads without authentication, no redirect.
 
-The root cause: Next.js used an internal header to prevent middleware from calling it'self in infinite loops. By including that header in a request, an attacker convinced the framework the middleware had already run. The fix was in versions 12.3.5, 13.5.9, 14.2.25, and 15.2.3.
+The root cause: Next.js used an internal header to prevent middleware from calling itself in infinite loops. By including that header in a request, an attacker convinced the framework the middleware had already run. The fix was in versions 12.3.5, 13.5.9, 14.2.25, and 15.2.3.
 
 [Postmortem on Next.js Middleware bypass](https://vercel.com/blog/postmortem-on-next-js-middleware-bypass)
 
@@ -153,13 +149,13 @@ export async function POST(req: Request) {
 }
 ```
 
-Think of middleware as the front door of a building — it checks IDs as a first pass, but every room inside still needs it's own lock.
+Think of middleware as the front door of a building. It checks IDs as a first pass, but every room inside still needs its own lock.
 
-### Server Actions — The New Attack Surface
+### Server Actions: the new attack surface
 
-Server Actions are convenient. You call a function from your React component and server-side logic runs. No API route to write and no fetch to configure.
+Server Actions are convenient: you call a function from your React component and server-side logic runs, without an API route or a fetch call.
 
-A Server Action is effectively just a POST endpoint, and it's input is not enforced or validated by TypeScript — it can contain anything the caller provides:
+A Server Action is a POST endpoint. Its input isn't enforced or validated by TypeScript: it can contain anything the caller provides:
 
 ```ts file=actions/updateProfile.ts
 "use server";
@@ -210,7 +206,7 @@ export async function updateProfile(formData: FormData) {
 Never use a user-supplied ID to identify who owns a resource. Pull the authenticated user ID from the session. An attacker can send any `userId` value they want in form data.
 :::
 
-### React Server Components — Source Code Leakage
+### React Server Components: source code leakage
 
 When React Server Components serialize data to pass to the client, the serialization includes the function arguments and return values. In late 2025, CVE-2025-55183 demonstrated that malformed requests could cause Server Functions to return their own source code including any hardcoded secrets, internal URLs, or helper functions inlined by the bundler.
 
@@ -230,7 +226,7 @@ In Next.js, prefix variables with `NEXT_PUBLIC_` only if they genuinely need to 
 import "server-only"; // throws at build time if imported on client
 ```
 
-## Content Security Policy — Your Last Line of Defense
+## Content Security Policy
 
 CSP is a response header that tells the browser which sources are allowed to load scripts, styles, images, and other resources. If an attacker injects a script tag, CSP can still block it from running.
 
@@ -260,16 +256,16 @@ export function middleware(request: NextRequest) {
 ```
 
 :::info
-`frame-ancestors 'none'` replaces the old `X-Frame-Options: DENY` header and blocks your app from being embedded in an iframe — the primary vector for clickjacking attacks.
+`frame-ancestors 'none'` replaces the old `X-Frame-Options: DENY` header and blocks your app from being embedded in an iframe, the primary vector for clickjacking attacks.
 :::
 
-A strict CSP with nonces is more work to set up than `unsafe-inline` but it actually blocks script injection. `unsafe-inline` defeats the purpose if you allow all inline scripts, XSS works fine.
+A strict CSP with nonces is more work to set up than `unsafe-inline` but it actually blocks script injection. `unsafe-inline` defeats the purpose: if you allow all inline scripts, XSS works fine.
 
-## Supply Chain Attacks — The Problem You're Probably Not Thinking About
+## Supply chain attacks
 
 Modern frontend projects pull in hundreds of packages and you don't audit them all. That's the attack surface.
 
-The event-stream incident (2018) was the first widely-noticed case where a malicious maintainer shipped backdoored code to millions of projects via a dependency. It wasn't the last. In 2025 and 2026 the pattern keeps repeating, typically through:
+The event-stream incident (2018) was the first widely-noticed case of a malicious maintainer shipping backdoored code to millions of projects via a dependency. The same thing keeps happening, typically through:
 
 - Package maintainer account takeover
 - Typosquatting (`react-dom` vs `react-dоm` using a Cyrillic `о`)
@@ -277,10 +273,12 @@ The event-stream incident (2018) was the first widely-noticed case where a malic
 
 A few things reduce the risk:
 
-**Lock your lockfile.**\
-`package-lock.json` or `pnpm-lock.yaml` pins exact versions and don't run `npm install` in CI without `--frozen-lockfile`.
+### Lock your lockfile
 
-**Enable Subresource Integrity for CDN scripts.**\
+`package-lock.json` or `pnpm-lock.yaml` pins exact versions. Don't run `npm install` in CI without `--frozen-lockfile`.
+
+### Enable Subresource Integrity for CDN scripts
+
 If you're loading anything from a CDN:
 
 ```html
@@ -293,7 +291,8 @@ If you're loading anything from a CDN:
 
 If the CDN serves a modified file, the browser refuses to run it.
 
-**Run `npm audit` in CI.**\
+### Run `npm audit` in CI
+
 Not perfect, it misses unknown vulnerabilities but it catches the known ones:
 
 ```yaml file=.github/workflows/security.yml
@@ -301,14 +300,15 @@ Not perfect, it misses unknown vulnerabilities but it catches the known ones:
   run: npm audit --audit-level=high
 ```
 
-**Prefer fewer dependencies.**\
+### Prefer fewer dependencies
+
 Every package you don't install is a package that can't be compromised.
 
 :::info
-The same CVE-surface thinking applies to your container base image — see [Docker Base Images](/blog/docker-base-image-types)
+The same CVE-surface thinking applies to your container base image. See [Docker Base Images](/blog/docker-base-image-types)
 :::
 
-## Security Headers Checklist
+## Security headers checklist
 
 These are the headers worth setting. Most are one-liners:
 
@@ -324,13 +324,13 @@ const securityHeaders = [
 
 HSTS (`Strict-Transport-Security`) tells browsers to only connect over HTTPS, even if the user types `http://`. The `preload` flag gets you into browser preload lists, which hardcodes this for first-time visitors.
 
-## Quick-Check: The Questions Worth Asking Your Codebase
+## Quick check
 
-Before shipping, run through these. If the answer to any of them is "I'm not sure," that's the one to check first:
+If any of these is "I'm not sure," that's the one to check first:
 
 1. Is `dangerouslySetInnerHTML` used anywhere? Is it sanitized with DOMPurify?
 1. Does every Server Action validate the session independently?
-1. Does every Server Action validate and type it's inputs with a schema?
+1. Does every Server Action validate and type its inputs with a schema?
 1. Are user-supplied IDs used for resource lookups, or session IDs?
 1. Is CSP configured?
 1. Is npm audit running in CI?
@@ -353,8 +353,8 @@ Check your version in <code>package.json</code>. If it's below 15.2.3 (15.x bran
 
 ## Conclusion
 
-The model has changed and frontend is no longer a thin layer on top of an API — it owns session management, data access, and business logic. That means it needs to be secured like a backend.
+Frontend owns session management, data access, and business logic now. It needs to be secured like a backend.
 
-Most of it isn't complicated: validate inputs, authenticate in every handler, keep dependencies updated, set the headers, use `httpOnly` cookies and don't put secrets in components.
+Most of it isn't complicated: validate inputs, authenticate in every handler, keep dependencies updated, set the headers, use `httpOnly` cookies, and don't put secrets in components.
 
-These checks aren't part of most teams' default workflow, so they get skipped under deadline pressure and stay skipped. Getting CVE-2025-29927 was embarrassing for Next.js. Getting hacked through middleware you forgot to audit is worse. Stay safe.
+These checks aren't part of most teams' default workflow, so they get skipped under deadline pressure and stay skipped. A CVE making the news is embarrassing; getting compromised through middleware you forgot to audit is worse.

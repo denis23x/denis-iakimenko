@@ -37,10 +37,11 @@ WebAssembly is a binary instruction format, a compiled target rather than a lang
 All major browsers have supported Wasm since 2017, no plugins or flags required.
 
 ```mermaid caption=How WebAssembly fits into the stack
-flowchart TD
+flowchart LR
     A[Rust/C/Go] -->|Compiler| B[.wasm binary]
     B --> C[JavaScript]
-    C --> D[DOM/Browser APIs]
+    C --> D[DOM]
+    C --> E[Browser APIs]
 ```
 
 JavaScript still owns the DOM. Wasm can't touch it directly. The pattern is always the same: JavaScript loads the Wasm module, calls functions in it, gets results back, does something with those results. They work together. Wasm doesn't replace the JS layer, it handles the computation that JS handles poorly.
