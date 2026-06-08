@@ -1,8 +1,8 @@
 ---
 title: WebAssembly Without the Hype — What It Actually Is, When to Use It, and How to Start
 description: A practical guide to WebAssembly (Wasm) for web developers. Covers what Wasm is, how it works alongside JavaScript, real-world use cases, a working Rust example, and honest limitations.
-pubDatetime: 2026-06-08T10:00:00Z
-modDatetime: 2026-06-08T10:00:00Z
+pubDatetime: 2026-06-07T10:00:00Z
+modDatetime: 2026-06-07T10:00:00Z
 author: Denis Iakimenko
 slug: webassembly-guide
 featured: false
