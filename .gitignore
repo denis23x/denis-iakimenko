@@ -37,3 +37,6 @@ public/pagefind
 
 # raw materials
 src/data/raw/
+
+# claude skills
+.claude/
