@@ -93,6 +93,13 @@ A few things I've built outside of work
 
 </details>
 
+<details><summary>Unity</summary>
+
+- [Unity Essentials](https://www.credly.com/badges/8ac21146-510f-4fb3-a180-e09cf425162d/embedded)
+- [Unity Junior Programmer](https://www.credly.com/badges/7968e8d7-867c-4d9c-9b19-212300b27e84/embedded)
+
+</details>
+
 ## Tech & Tools
 
 <details class="tags"><summary>Client-side</summary>
@@ -203,9 +210,10 @@ A few things I've built outside of work
 <details class="tags"><summary>Hobbies</summary>
 
 ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-white?logo=raspberrypi&logoColor=%23A22846)
-![Roblox Studio](https://img.shields.io/badge/Roblox%20Studio-white?logo=robloxstudio&logoColor=%2300A2FF)
 ![3ds Max](https://img.shields.io/badge/3ds%20Max-white?logo=3dsmax&logoColor=black)
 ![Godot](https://img.shields.io/badge/Godot-white?logo=godotengine&logoColor=%23478CBF)
+![Unity](https://img.shields.io/badge/Unity-white?logo=unity&logoColor=black)
+![Blender](https://img.shields.io/badge/Blender-white?logo=blender&logoColor=%23E87D0D)
 
 </details>
 
