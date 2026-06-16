@@ -1,6 +1,6 @@
 ---
-title: File-Based Routing Is the New Default
-description: How file-based routing works in Next.js, Remix, Nuxt 3, SvelteKit, and Analog. The conventions they share, where they differ, and the patterns worth using.
+title: File Based Routing Is the New Default
+description: How file based routing works in Next.js, Remix, Nuxt 3, SvelteKit, and Analog. The conventions they share, where they differ, and the patterns worth using.
 pubDatetime: 2026-06-15T10:00:00Z
 modDatetime: 2026-06-15T10:00:00Z
 author: Denis Iakimenko
@@ -29,11 +29,11 @@ For years, routing was something you configured. You imported a router, wrote an
 
 It never quite did. The routes file grew long and stale. Someone renamed a component and forgot to update the path. A new developer joined, had no idea where to add a route, and picked a pattern that differed from the three already there.
 
-File-based routing removes the config entirely. The file is the route. Put a file at `pages/about.tsx` and `/about` exists. Move the file, the URL moves. Delete the file, the route is gone. You never touch a config.
+File based routing removes the config entirely. The file is the route. Put a file at `pages/about.tsx` and `/about` exists. Move the file, the URL moves. Delete the file, the route is gone. You never touch a config.
 
 Every major full-stack framework adopted this as the primary routing mechanism: Next.js, Remix, Nuxt 3, SvelteKit, Analog. This post covers how each one works, what they share, where they differ, and the patterns worth knowing.
 
-## What file-based routing actually is
+## What file based routing actually is
 
 The idea: the filesystem mirrors the URL structure. A file at a given path corresponds to a route at the same path.
 
@@ -215,7 +215,7 @@ The load function and page component are separate files. `+page.ts` is optional;
 
 ### Analog: Angular goes filesystem-first
 
-Analog adds file-based routing on top of Angular, which previously required manual route config in `app.routes.ts`:
+Analog adds file based routing on top of Angular, which previously required manual route config in `app.routes.ts`:
 
 ```
 src/app/pages/
@@ -254,7 +254,7 @@ export async function load({ params }: { params: { slug: string } }) {
 }
 ```
 
-Analog brings file-based routing to Angular without abandoning the DI system or standalone component model.
+Analog brings file based routing to Angular without abandoning the DI system or standalone component model.
 
 ## What they all share
 
@@ -269,7 +269,7 @@ Across all five frameworks, these conventions hold:
 | Route grouping       | `(group)`: organizational, no URL impact         |
 | Nested layouts       | Directory nesting = layout nesting               |
 
-```mermaid caption=Shared concepts across file-based routing frameworks
+```mermaid caption=Shared concepts across file based routing frameworks
 graph LR
     A[filesystem path] --> B[URL segment]
     B --> C["index / page / +page"]
@@ -413,7 +413,7 @@ Click a photo in `/feed`: it opens in a modal over the feed. Copy the URL and op
 
 ### Colocation
 
-File-based routing doesn't force you to centralize everything. Components, utilities, and tests can live next to the route they belong to:
+File based routing doesn't force you to centralize everything. Components, utilities, and tests can live next to the route they belong to:
 
 ```
 app/blog/[slug]/
@@ -498,16 +498,16 @@ Metadata lives with the route: no separate config file, no extra import. The tit
 The Pages Router is still supported and won't be removed. But the App Router is the default for new projects and the only place where Server Components, Server Actions, parallel routes, and intercepting routes are available. For new projects, use App Router.
 </details>
 
-<details><summary>Can I mix file-based and manual routes in the same app?</summary>
-In Remix, yes: you can eject from the file convention and define routes manually in <code>vite.config.ts</code>, or mix both approaches. In Next.js, the Pages Router and App Router can coexist in the same project, serving different paths. In Nuxt and SvelteKit, file-based routing is the only mechanism; you extend it with middleware and hooks rather than replacing it.
+<details><summary>Can I mix file based and manual routes in the same app?</summary>
+In Remix, yes: you can eject from the file convention and define routes manually in <code>vite.config.ts</code>, or mix both approaches. In Next.js, the Pages Router and App Router can coexist in the same project, serving different paths. In Nuxt and SvelteKit, file based routing is the only mechanism; you extend it with middleware and hooks rather than replacing it.
 </details>
 
-<details><summary>What about React Router v7? Is it file-based?</summary>
-React Router v7 introduced file-based routing as an optional "framework mode", powered by the same conventions as Remix after the two projects merged. You opt in via the Vite plugin, which scans your routes directory and generates route config automatically. The manual <code>createBrowserRouter</code> approach still works if you prefer it.
+<details><summary>What about React Router v7? Is it file based?</summary>
+React Router v7 introduced file based routing as an optional "framework mode", powered by the same conventions as Remix after the two projects merged. You opt in via the Vite plugin, which scans your routes directory and generates route config automatically. The manual <code>createBrowserRouter</code> approach still works if you prefer it.
 </details>
 
-<details><summary>How does file-based routing affect code splitting?</summary>
-Route files are automatic code-split boundaries. Each route gets its own chunk, so the framework only loads code for the route the user is on. With manual routing, you'd add <code>React.lazy()</code> for each route yourself. File-based routing makes this the default.
+<details><summary>How does file based routing affect code splitting?</summary>
+Route files are automatic code-split boundaries. Each route gets its own chunk, so the framework only loads code for the route the user is on. With manual routing, you'd add <code>React.lazy()</code> for each route yourself. File based routing makes this the default.
 </details>
 
 <details><summary>Does SvelteKit's + prefix affect imports?</summary>
@@ -515,12 +515,12 @@ No. The <code>+</code> prefix is a build-time naming convention. It doesn't affe
 </details>
 
 <details><summary>Why did Angular need a separate framework (Analog) for this?</summary>
-Angular's core router is imperative by design: you define routes in TypeScript, which keeps it flexible and explicit. Analog didn't change the Angular router; it added a build-time layer that reads the filesystem and generates the route config for you. The result is the same Angular router underneath, with file-based conventions on top.
+Angular's core router is imperative by design: you define routes in TypeScript, which keeps it flexible and explicit. Analog didn't change the Angular router; it added a build-time layer that reads the filesystem and generates the route config for you. The result is the same Angular router underneath, with file based conventions on top.
 </details>
 
 ## Conclusion
 
-File-based routing solved a coordination problem. When routes live in a config file separate from the components they reference, the two drift apart. Someone moves a component, the route breaks. Someone adds a route, the component never gets created. The config becomes the file nobody wants to touch.
+File based routing solved a coordination problem. When routes live in a config file separate from the components they reference, the two drift apart. Someone moves a component, the route breaks. Someone adds a route, the component never gets created. The config becomes the file nobody wants to touch.
 
 When the file is the route, the connection is structural. A missing file means a missing route. A deleted component means a deleted route. The filesystem is the source of truth.
 
