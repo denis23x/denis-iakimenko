@@ -1,8 +1,8 @@
 ---
 title: File-Based Routing Is the New Default
 description: How file-based routing works in Next.js, Remix, Nuxt 3, SvelteKit, and Analog. The conventions they share, where they differ, and the patterns worth using.
-pubDatetime: 2026-06-24T10:00:00Z
-modDatetime: 2026-06-24T10:00:00Z
+pubDatetime: 2026-06-15T10:00:00Z
+modDatetime: 2026-06-15T10:00:00Z
 author: Denis Iakimenko
 slug: file-based-routing
 featured: false
