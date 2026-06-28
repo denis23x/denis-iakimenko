@@ -1,6 +1,6 @@
 ---
-title: "Bun vs Deno: How Bun Quietly Won the Runtime Race"
-description: "Why Bun overtook Deno in adoption: drop-in Node.js compatibility, real speed gains, a working HTTP API example, local setup, Docker deployment, and where Deno is still the better pick."
+title: "Bun vs Deno: How Bun Won the Runtime Race"
+description: "Why Bun overtook Deno: drop-in Node.js compatibility, real speed, a working HTTP API example, Docker, and where Deno is still the better pick."
 pubDatetime: 2026-06-27T10:00:00Z
 modDatetime: 2026-06-27T10:00:00Z
 author: Denis Iakimenko
@@ -30,7 +30,7 @@ Years later Deno is still the cleaner runtime, but Bun is the one that keeps end
 
 I noticed this on a side project where I wanted to replace a small Express service and reached for Deno first. An hour in I was rewriting imports, swapping `process.env` for `Deno.env`, and porting a dependency that used a Node-only API. The same migration to Bun took twenty minutes: `bun install`, change the start script, done.
 
-That's most of the story in one sentence: Deno asked the ecosystem to move, while Bun moved to where the ecosystem already was.
+That's most of the story behind how Bun quietly won this runtime race: Deno asked the ecosystem to move, while Bun moved to where the ecosystem already was.
 
 This post covers why that gap matters, where Bun is fast in ways you can measure, a working API you can run locally, how to deploy it, and the cases where Deno is still the right call.
 
