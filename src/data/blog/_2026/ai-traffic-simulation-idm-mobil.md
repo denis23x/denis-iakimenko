@@ -1,6 +1,6 @@
 ---
 title: AI Traffic System — Lane Level Maps, IDM, MOBIL, and Why Traffic Simulation Breaks
-description: How an AI traffic system works, from lane level road maps and routing to IDM car following, MOBIL lane changing, intersection deadlocks, and microscopic traffic simulation in games.
+description: How an AI traffic system works, from lane level maps to IDM car following, MOBIL lane changing, intersection deadlocks, and traffic simulation in games.
 pubDatetime: 2026-08-11T10:00:00Z
 modDatetime: 2026-08-11T10:00:00Z
 author: Denis Iakimenko
