@@ -1,6 +1,6 @@
 ---
-title: Level Streaming Like GTA — The Keyhole, LOD Ladders, and Why Open Worlds Hitch
-description: How open world level streaming works, from keyhole streaming volumes and prediction to LOD ladders, eviction hysteresis, async I/O budgets, and streaming bugs.
+title: Level Streaming Like GTA — The Keyhole, The LOD Ladder, and Why Open Worlds Hitch
+description: How level streaming works in an open world like GTA, from the keyhole volume to the LOD ladder, eviction hysteresis, and the hitches they cause.
 pubDatetime: 2026-08-22T10:00:00Z
 modDatetime: 2026-08-22T10:00:00Z
 author: Denis Iakimenko
@@ -30,7 +30,7 @@ Drive across the city at 40 km/h and everything is perfect. Steal a jet, climb t
 
 Level streaming looks like an I/O problem and behaves like a scheduling problem. You have a fixed memory budget, a fixed disk bandwidth, a fixed frame budget, and a player who moves faster than any of them refill. The job is deciding what to spend those budgets on in the next 200 milliseconds.
 
-The shape most open worlds converge on is a **keyhole**: a small sphere around the player plus a long narrow wedge in the direction of travel. Below is how you get there, what has to sit on top of it, and where streaming quietly breaks.
+The shape most open worlds converge on, and the one GTA has used for years, is a **keyhole**: a small sphere around the player plus a long narrow wedge in the direction of travel. Below is how you get there, why the LOD ladder on top of it decides what a player sees, and where the hitches come from.
 
 ## The three budgets
 
