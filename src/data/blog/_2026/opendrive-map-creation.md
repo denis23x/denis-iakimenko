@@ -1,6 +1,6 @@
 ---
 title: OpenDRIVE Map Creation — The .xodr Format, Reference Lines, Junctions, and the Tools That Build Them
-description: How OpenDRIVE map creation works, from the ASAM .xodr road network format, reference lines, lane sections, and junctions to the editors and viewers for CARLA and esmini.
+description: How OpenDRIVE map creation works, from the .xodr road network format, reference lines, and junctions to the editors and viewers for CARLA.
 pubDatetime: 2026-08-30T10:00:00Z
 modDatetime: 2026-08-30T10:00:00Z
 author: Denis Iakimenko
@@ -216,7 +216,7 @@ graph LR
 Two practical notes on it. First, the fastest possible start is no editor at all: `esmini` ships example `.xodr` files, and twenty minutes of editing one by hand while watching it in `odrviewer` teaches the format better than the spec does. That holds up until the first junction, where you switch to an editor and don't look back. Second, the OSM route is seductive and rough: OpenStreetMap has no lane-level geometry, so `netconvert` *infers* lanes and junction shapes from tags, and the result needs manual cleanup roughly proportional to how much you care about the junctions.
 
 :::info
-If your target is a game engine rather than a simulator: RoadRunner exports directly to Unreal and Unity scenes, CARLA is an Unreal project that builds a world from OpenDRIVE at load time, and for do-it-yourself pipelines a `.xodr` parser plus the sampling code above gives you lane centerlines to drive [IDM traffic](/blog/ai-traffic-simulation-idm-mobil) on, while the mesh stays whatever your artists made. The format describes the road's *logic*; it never claims to be your render geometry.
+If your target is a game engine rather than a simulator: RoadRunner exports directly to Unreal and Unity scenes, CARLA is an Unreal project that builds a world from OpenDRIVE at load time, and for do-it-yourself pipelines a `.xodr` parser plus the sampling code above gives you lane centerlines to drive [IDM traffic](/blog/ai-traffic-simulation-idm-mobil) on, sidewalk lanes to spawn [NavMesh pedestrians](/blog/unity-navmesh-ai-navigation) on, while the mesh stays whatever your artists made. The format describes the road's *logic*; it never claims to be your render geometry.
 :::
 
 ## Reading a .xodr file without crying
@@ -236,7 +236,7 @@ The format's precision is also its scope limit, and knowing the edges saves week
 
 - **It is not a routing map.** There's no notion of addresses, turn restrictions beyond geometry, or road names you can navigate by. Lanenet-level routing you build yourself on top of the links, or you let SUMO or CARLA's API do it.
 - **It is not render geometry.** No textures, no materials beyond road mark colors, no buildings except as abstract outline objects. Every consumer generates or pairs its own meshes.
-- **It does not scale to a continent.** One XML file, fully parsed, with global `s` precision. City-sized maps are fine; country-sized maps are not what it's for, and nobody streams `.xodr` in chunks.
+- **It does not scale to a continent.** One XML file, fully parsed, with global `s` precision. City-sized maps are fine; country-sized maps are not what it's for, and nobody streams `.xodr` in cells the way an open world [streams its geometry](/blog/level-streaming-keyhole-open-world).
 - **It is stricter than reality.** Real degraded roads, unmarked rural junctions, and parking lots fit the model awkwardly. The format grew up on well-built German roads and it shows.
 
 The pending change worth knowing about: ASAM is folding OpenDRIVE, OpenSCENARIO and the rest into a harmonized generation with a common foundation, so expect the 1.8 line to be the stable target for a while and check the [ASAM roadmap](https://www.asam.net/standards/detail/opendrive/) before betting a toolchain on a newer major version.
