@@ -197,6 +197,7 @@ There is no single blessed editor. What exists is a handful of tools with differ
 | [Truevision Designer](https://github.com/truevisionai/designer) | Free / open source | Web-based visual editor, the usual "just let me draw roads" starting point |
 | [ODDLOT](https://www.hlrs.de/solutions/types-of-computing/visualization/oddlot) | Free / open source | Academic editor from HLRS Stuttgart, older UI, solid format coverage |
 | [Blender Driving Scenario Creator](https://github.com/johschmitz/blender-driving-scenario-creator) | Free add-on | Author roads and junctions in Blender, export `.xodr` plus meshes |
+| [My own Blender OpenDRIVE add-on](/blog/blender-opendrive-addon) | Free add-on | Any Blender curve becomes a road; every Bezier segment exports as an exact `paramPoly3` |
 | [esmini](https://github.com/esmini/esmini) | Free / open source | Reference-grade player: `odrviewer` renders any `.xodr`, `odrplot` charts it, great for validation |
 | [odrviewer.io](https://odrviewer.io/) | Free, in-browser | Drag a `.xodr` onto a browser tab and inspect it, zero install |
 | [CARLA](https://carla.org/) | Free / open source | The consumer: loads OpenDRIVE directly and can generate a drivable world from the bare `.xodr` |
