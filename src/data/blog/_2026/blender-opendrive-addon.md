@@ -1,6 +1,6 @@
 ---
-title: Blender OpenDRIVE Add-on: A Curve-Based .xodr Editor Where Every Bezier Is a paramPoly3
-description: How I built a Blender OpenDRIVE add-on: a curve-based .xodr editor that exports road networks as paramPoly3, with lane sections, junctions, and ASAM schema validation.
+title: Blender OpenDRIVE Add-on - A Curve-Based .xodr Editor Where Every Bezier Is a paramPoly3
+description: How I built a Blender OpenDRIVE add-on - a curve-based .xodr editor that exports road networks as paramPoly3, with lane sections, junctions, and ASAM schema validation.
 pubDatetime: 2026-09-11T10:00:00Z
 modDatetime: 2026-09-11T10:00:00Z
 author: Denis Iakimenko
