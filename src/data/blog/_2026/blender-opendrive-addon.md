@@ -1,6 +1,6 @@
 ---
 title: Blender OpenDRIVE Add-on - A Curve-Based .xodr Editor Where Every Bezier Is a paramPoly3
-description: How I built a Blender OpenDRIVE add-on - a curve-based .xodr editor that exports road networks as paramPoly3, with lane sections, junctions, and ASAM schema validation.
+description: How I built a Blender OpenDRIVE add-on - a curve-based .xodr editor that exports road networks as paramPoly3, lane sections, junctions, and schema validation.
 pubDatetime: 2026-09-11T10:00:00Z
 modDatetime: 2026-09-11T10:00:00Z
 author: Denis Iakimenko
@@ -30,7 +30,7 @@ The [previous post on OpenDRIVE map creation](/blog/opendrive-map-creation) ende
 
 Then I noticed the thing that turned a complaint into a weekend project. A cubic Bezier is a cubic parametric polynomial, and OpenDRIVE has a geometry primitive that is exactly a cubic parametric polynomial: `paramPoly3`. Blender's curve editor draws cubic Beziers, so nothing has to be fitted between the two. All that separates them is a change of basis.
 
-So the Blender OpenDRIVE add-on that came out of that weekend is not a road editor with a Blender front end. It is the opposite: Blender curves *are* the roads, the sidebar attaches OpenDRIVE semantics to them, and the `.xodr` export writes the curve that is on screen with no approximation anywhere in the path. What that bought me is the rest of this post, feature by feature, along with the places where refusing to approximate cost more work than fitting ever would have.
+So the Blender OpenDRIVE add-on that came out of that weekend is not a road editor with a Blender front end. It works the other way round, as a curve-based `.xodr` editor: Blender curves *are* the roads, the sidebar attaches OpenDRIVE semantics to them, and the export writes the curve that is on screen with no approximation anywhere in the path. What that bought me is the rest of this post, feature by feature, along with the places where refusing to approximate cost more work than fitting ever would have.
 
 > It writes [ASAM OpenDRIVE 1.9](https://www.asam.net/standards/detail/opendrive/) road networks, runs on Blender 4.2+ / 5.x, and is GPL-3.0: roughly 200 KB of Python across ten modules, plus a headless test suite.
 
@@ -38,7 +38,7 @@ So the Blender OpenDRIVE add-on that came out of that weekend is not a road edit
 
 A road is a Blender curve object. Its **first spline**, in world space, in the spline's own direction, is the reference line, and that direction is `s`. Everything else in the sidebar is a function of it, exactly as [the format models it](/blog/opendrive-map-creation).
 
-Each Bezier segment between two control points becomes one `<paramPoly3>`. The conversion is a basis change from Bernstein to power basis, done in the geometry's local frame. The spec puts that frame's origin at the segment start, with `u` along the start heading and `v` to the left:
+Every Bezier segment between two control points becomes one `<paramPoly3>`. The conversion is a basis change from Bernstein to power basis, done in the geometry's local frame. The spec puts that frame's origin at the segment start, with `u` along the start heading and `v` to the left:
 
 ```python file=geometry.py
 def _poly_coeffs(pts, hdg):
@@ -364,4 +364,4 @@ The thing I did not expect is how much of the add-on is not OpenDRIVE at all. Th
 
 All of that is the price of one decision: refuse to approximate the curve. Fitting arcs and spirals would have deleted the quadrature, the Newton solve and the convergence loop, and given me back a road that is nearly the one I drew. For a map that traffic logic reads back lane by lane, "nearly" was the part I did not want to debug at 2 a.m. six months later, and the exported `planView` being the curve on the screen has held up better than any other choice in the project.
 
-This Blender OpenDRIVE add-on lives in my own pipeline rather than on an extensions platform, and it does exactly what one person needed, which is the correct size for a tool like this. If you already live in Blender and your simulator speaks `.xodr`, the shape of the idea transfers even if the code does not. The curve editor you use every day can carry a road network, and the format has a primitive that fits its curves exactly.
+This Blender OpenDRIVE add-on lives in my own pipeline rather than on an extensions platform, and it does exactly what one person needed, which is the correct size for a tool like this. If you already live in Blender and your simulator speaks `.xodr`, the shape of the idea transfers even if the code does not. A curve-based editor you already use every day can carry a road network, and the format has a primitive that fits its curves exactly.
