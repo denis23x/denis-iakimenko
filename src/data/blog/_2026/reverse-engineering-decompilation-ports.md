@@ -1,8 +1,8 @@
 ---
 title: Reverse Engineering — Game Decompilation, Static Recompilation, and the Cases From GTA to Mario 64
 description: How reverse engineering works, from disassembly to game decompilation and static recompilation, through the cases that shaped it, from Phoenix BIOS to GTA and Mario 64.
-pubDatetime: 2026-10-09T10:00:00Z
-modDatetime: 2026-10-09T10:00:00Z
+pubDatetime: 2026-10-08T10:00:00Z
+modDatetime: 2026-10-08T10:00:00Z
 author: Denis Iakimenko
 slug: reverse-engineering-decompilation-ports
 featured: false
