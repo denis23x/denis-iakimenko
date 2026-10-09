@@ -1,6 +1,6 @@
 ---
-title: Reverse Engineering — Game Decompilation, Static Recompilation, and the Cases From GTA to Mario 64
-description: How reverse engineering works, from disassembly to game decompilation and static recompilation, through the cases that shaped it, from Phoenix BIOS to GTA and Mario 64.
+title: Reverse Engineering Games — Decompilation and Static Recompilation
+description: How reverse engineering games works, from disassembly to decompilation and static recompilation, with real cases from GTA, Mario 64, and Zelda.
 pubDatetime: 2026-10-08T10:00:00Z
 modDatetime: 2026-10-08T10:00:00Z
 author: Denis Iakimenko
@@ -30,7 +30,7 @@ The culprit was two functions grinding one CPU core through a 10 MB JSON file. R
 
 That's reverse engineering in miniature: nobody will explain the binary, so you ask the machine code directly.
 
-The same craft built the PC clone industry, let Linux talk to Windows file shares, and stopped WannaCry. In the last six years, through game decompilation and static recompilation, it turned dozens of console games into native PC ports running at 4K and 120 FPS. Two of those projects ended in a federal lawsuit and about 200 takedown notices. Others built the same way are still online. Why one gets sued and the other doesn't is a question no court has answered yet, and it's where this post ends up.
+The same craft built the PC clone industry, let Linux talk to Windows file shares, and stopped WannaCry. And over the last six years, reverse engineering games through decompilation and static recompilation turned dozens of console titles into native PC ports running at 4K and 120 FPS. Two of those projects ended in a federal lawsuit and about 200 takedown notices. Others built the same way are still online. Why one gets sued and the other doesn't is a question no court has answered yet, and it's where this post ends up.
 
 ## What reverse engineering is
 
@@ -188,7 +188,7 @@ Ghidra's release in March 2019 changed who could do this work. Before it, a seri
 
 The IBM PC shipped in 1981 with a published hardware design and one proprietary piece: the BIOS, about 8 KB of firmware that every program used to talk to the hardware. Apple v. Franklin (1983) had just established that firmware is protected by copyright. Copy the BIOS and IBM sues you, which it did to Corona, Eagle, and others.
 
-Compaq and then Phoenix Technologies solved it with a **clean room**. One team studied IBM's BIOS and wrote a specification describing exactly what each routine did, without any code in it. Lawyers reviewed the spec. A second team, who had never seen IBM's code, implemented it. Phoenix reportedly picked an engineer whose background was on the TI TMS9900, not Intel, to make the separation impossible to dispute.
+Compaq and then Phoenix Technologies solved it with a clean room. One team studied IBM's BIOS and wrote a specification describing exactly what each routine did, without any code in it. Lawyers reviewed the spec. A second team, who had never seen IBM's code, implemented it. Phoenix reportedly picked an engineer whose background was on the TI TMS9900, not Intel, to make the separation impossible to dispute.
 
 ```mermaid caption=Clean room design separates who reads from who writes
 flowchart LR
@@ -307,7 +307,7 @@ After Mario, the rest followed:
 - **Ocarina of Time** was decompiled by the Zelda Reverse Engineering Team in November 2021 after 21 months. Four months later, in March 2022, Harbour Masters released **Ship of Harkinian**, a native port built on `libultraship`, a reimplementation of the N64 SDK on modern hardware. It extracts assets from your ROM into an `.otr` archive and runs on Windows, Linux, macOS, Switch, Wii U, and Android.
 - **Diablo** was rebuilt in 2018 as Devilution, using a symbols file accidentally left on the Japanese PlayStation disc plus a debug build hidden inside the PC game's own data archives. Its successor, DevilutionX, runs on just about anything with a screen.
 - **Pokémon**: the pret organization has disassemblies and decompilations of nearly every mainline game from Red/Blue to HeartGold/SoulSilver and Platinum, and the ROM hacking scene now runs largely on them.
-- **Mario Kart 64, Star Fox 64, Twilight Princess, Banjo-Kazooie, Silent Hill, Kingdom Hearts 358/2 Days** and dozens more followed, with ports either released or in progress through 2025 and 2026.
+- **Later decomps:** Mario Kart 64, Star Fox 64, Twilight Princess, Banjo-Kazooie, Silent Hill, Kingdom Hearts 358/2 Days, and dozens more followed, with ports either released or in progress through 2025 and 2026.
 
 :::info
 A finished decompilation is not a port. It's source code that rebuilds the original ROM for the original console. Turning it into a PC game means replacing the graphics, audio, input, and file layers, which is a separate project somebody has to volunteer for. Several games have complete decomps and still no port.
@@ -373,7 +373,7 @@ It depends on where you are, what you do with the result, and what you publish. 
 - **Circumventing copy protection** is a separate offense under DMCA §1201, with narrow exemptions for interoperability, security research, and preservation, renewed every three years.
 - **Publishing a reconstructed codebase** is where it gets risky. Matching decompilations are mechanically derived from the original, and a court could easily view them as a derivative work. Take-Two sued over re3. Nintendo has generally targeted distributed builds rather than the decomp repos. Nobody has a ruling.
 - **Distributing assets** is plainly infringement, which is why every serious project ships code only and extracts assets from a copy you supply.
-- **Clean room** is still the safest route to a reimplementation you can defend, if you can afford two teams and a lawyer.
+- **A clean room reimplementation** is still the safest route to a reimplementation you can defend, if you can afford two teams and a lawyer.
 
 :::danger{title="Leaked source changes everything"}
 Using leaked source code, even just to look at it, contaminates a project. Most decompilation communities ban anyone who has seen a leak from contributing, because one function copied from a leak hands the rights holder an easy argument against the whole thing. When Nintendo's internal "gigaleak" hit in 2020, several N64 projects made a point of refusing to touch it.
