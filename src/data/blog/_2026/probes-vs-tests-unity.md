@@ -1,6 +1,6 @@
 ---
-title: Probes vs Tests in Unity — Finding the Bugs Your Tests Can't See
-description: "Probes vs tests in Unity: how runtime probes catch hard-to-reproduce bugs that unit testing, Play Mode tests and the Unity Test Framework miss, from Kubernetes liveness probes to debugging traffic AI."
+title: Probes vs Tests in Unity — Finding Bugs Your Tests Can't See
+description: "Probes vs tests in Unity: finding bugs your tests can't see with runtime probes, then pinning them with Play Mode tests in the Unity Test Framework."
 pubDatetime: 2026-10-22T10:00:00Z
 modDatetime: 2026-10-22T10:00:00Z
 author: Denis Iakimenko
@@ -28,7 +28,7 @@ Every test is green, and a car slams on the brakes in the middle of an empty jun
 
 This is a classic hard-to-reproduce bug, and unit testing can't help with it, because nobody knows what to assert yet. You aren't asking whether the braking formula is right. You're asking what this car sees in the frame it decides to brake. To find out, you add a **probe**: a few lines in the running game that write down what the car sees.
 
-Probes and tests both run code to check code, so people mix them up, even though they answer different questions and have very different lifespans. This post covers where the word comes from, what probes look like in Unity, how they compare with Edit Mode and Play Mode tests in the Unity Test Framework, and how a probe turns into a regression test once it has found the bug.
+Probes vs tests in Unity is a question of timing: probes are for finding bugs your tests can't see, tests are for keeping them fixed. Both run code to check code, so people mix them up, even though they answer different questions and have very different lifespans. This post covers where the word comes from, what probes look like in Unity, how they compare with Edit Mode and Play Mode tests in the Unity Test Framework, and how a probe turns into a regression test once it has found the bug.
 
 ## One word, many meanings
 
@@ -78,7 +78,7 @@ The program has no idea it's being watched. You ask it a question from outside, 
 
 ## Probes vs tests: question versus assertion
 
-**A test asserts an answer you already know. A probe asks a question you can't answer yet.**
+**A test asserts an answer. A probe asks a question.** The test's answer is one you already know; the probe's question is one you can't answer yet.
 
 A test says "given this input, the function returns 42", and you wrote the 42 before running anything. A probe asks "what does the function return on frame 3812 in this scene?", and you learn the answer when you run it. The rest of the table follows from that difference.
 
